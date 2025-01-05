@@ -1,0 +1,21 @@
+# Python
+*.pyc
+__pycache__/
+
+# Docker
+*.log
+*.env
+
+# Node
+node_modules/
+build/
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+
+# VSCode
+.vscode/
+
+# Other
+.env
