@@ -4,8 +4,16 @@ services:
     container_name: zookeeper
     environment:
       - ZOOKEEPER_CLIENT_PORT=2181
+      - ALLOW_ANONYMOUS_LOGIN=yes
     ports:
       - "2181:2181"
+    networks:
+      - supplychain_net
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "2181"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   kafka:
     image: bitnami/kafka:latest
@@ -21,37 +29,14 @@ services:
       - KAFKA_CFG_LISTENERS=PLAINTEXT://0.0.0.0:9092
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
     volumes:
-      - kafka_data:/bitnami
-
-  spark-master:
-    image: bitnami/spark:latest
-    container_name: spark-master
-    environment:
-      - SPARK_MODE=master
-      - SPARK_MASTER_PORT=7077
-      - SPARK_MASTER_WEBUI_PORT=8080
-    ports:
-      - "8080:8080"
-      - "7077:7077"
-    depends_on:
-      - kafka
-
-  spark-worker:
-    image: bitnami/spark:latest
-    container_name: spark-worker
-    environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark-master:7077
-      - SPARK_WORKER_MEMORY=2G
-    depends_on:
-      - spark-master
-    ports:
-      - "8081:8081"
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 2G
+      - ./kafka/data:/bitnami/kafka/data
+    networks:
+      - supplychain_net
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "9092"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   postgres:
     image: postgres:15
@@ -64,14 +49,20 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./postgres/initdb/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - supplychain_net
+    restart: always
 
   redis:
     image: redis:6
     container_name: redis
     ports:
       - "6379:6379"
+    networks:
+      - supplychain_net
+    restart: always
 
-  # FastAPI Service
   api:
     build: ./api
     container_name: fastapi
@@ -83,47 +74,23 @@ services:
       - kafka
     env_file:
       - .env
+    volumes:
+      - ./ml/model:/app/model  # Share the model directory with the API container
+    networks:
+      - supplychain_net
+    restart: always
 
-  # Ingestion Service
   ingestion:
     build: ./ingestion
     container_name: ingestion
+    env_file:
+      - .env
     depends_on:
       - kafka
-    env_file:
-      - .env
-    # Remove or comment out Datadog labels
-    # labels:
-    #   - "com.datadoghq.ad.logs=true"
-    #   - "com.datadoghq.ad.logs.source=ingestion"
-    #   - "com.datadoghq.ad.logs.service=ingestion"
+    networks:
+      - supplychain_net
+    restart: always
 
-  # Frontend Dashboard
-  frontend:
-    build: ./frontend
-    container_name: frontend
-    ports:
-      - "3000:3000"
-    depends_on:
-      - api
-    env_file:
-      - .env
-
-  # Datadog Agent (Remove or Comment Out)
-  # datadog:
-  #   image: datadog/agent:latest
-  #   container_name: datadog
-  #   environment:
-  #     - DD_API_KEY=your_datadog_api_key
-  #     - DD_SITE=datadoghq.com
-  #     - DD_DOGSTATSD_PORT=8125
-  #     - DD_APM_ENABLED=true
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock:ro
-  #     - /proc/:/host/proc/:ro
-  #     - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
-
-  # ML Service
   ml:
     build: ./ml
     container_name: ml
@@ -136,6 +103,9 @@ services:
     volumes:
       - ./ml:/app
     command: python train_model.py
+    networks:
+      - supplychain_net
+    restart: always
 
 networks:
   supplychain_net:

@@ -1,8 +1,5 @@
-fastapi
-uvicorn
-pydantic
-joblib
-scikit-learn
-requests
-psycopg2-binary
-redis
+fastapi==0.95.1
+uvicorn==0.20.0
+pydantic==1.10.7
+joblib==1.2.0
+scikit-learn==1.2.2

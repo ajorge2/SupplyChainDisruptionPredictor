@@ -3,60 +3,82 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report
 import joblib
-import os
 import psycopg2
+import os
+from sqlalchemy import create_engine
+from datetime import datetime
 
-# Path to save the model
-MODEL_DIR = 'model'
-MODEL_PATH = os.path.join(MODEL_DIR, 'model.joblib')
+MODEL_PATH = os.getenv("MODEL_PATH", "model/model.joblib")
+POSTGRES_USER = os.getenv("POSTGRES_USER")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "postgres")
+POSTGRES_PORT = os.getenv("POSTGRES_PORT", 5432)
+POSTGRES_DB = os.getenv("POSTGRES_DB", "supplychaindb")
 
-# Ensure model directory exists
-os.makedirs(MODEL_DIR, exist_ok=True)
-
-def load_historical_data():
-    # Connect to PostgreSQL and fetch data
-    conn = psycopg2.connect(
-        host=os.getenv("POSTGRES_HOST", "postgres"),
-        port=os.getenv("POSTGRES_PORT", 5432),
-        user=os.getenv("POSTGRES_USER", "postgres"),
-        password=os.getenv("POSTGRES_PASSWORD", "postgres"),
-        dbname=os.getenv("POSTGRES_DB", "supplychaindb")
-    )
-    query = "SELECT temperature, humidity, location, disruption FROM weather_historical JOIN predictions ON weather_historical.location = predictions.location;"
-    df = pd.read_sql(query, conn)
-    conn.close()
-    return df
-
+def load_data():
+    """Load data from PostgreSQL database."""
+    try:
+        # Create SQLAlchemy engine
+        engine = create_engine(
+            f"postgresql+psycopg2://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}@{os.getenv('POSTGRES_HOST')}:{os.getenv('POSTGRES_PORT')}/{os.getenv('POSTGRES_DB')}"
+        )
+        query = """
+        SELECT
+            weather_historical.temperature,
+            weather_historical.humidity,
+            weather_historical.location,
+            predictions.disruption
+        FROM
+            weather_historical
+        JOIN
+            predictions ON weather_historical.location = predictions.location
+        """
+        df = pd.read_sql(query, engine)
+        return df
+    except Exception as e:
+        print(f"Error connecting to PostgreSQL or executing query: {e}")
+        return pd.DataFrame()
 
 def preprocess_data(df):
-    # Convert categorical 'location' to dummy variables
+    """Preprocess data: encode categorical variables and split features/target."""
+    # Convert categorical 'location' column into one-hot encoding
     df = pd.get_dummies(df, columns=['location'], drop_first=True)
-    X = df.drop('disruption', axis=1)
-    y = df['disruption']
+
+    # Separate features (X) and target variable (y)
+    X = df.drop("disruption", axis=1)
+    y = df["disruption"]
+
     return X, y
 
-def train_model(X, y):
-    model = RandomForestClassifier(n_estimators=100, random_state=42)
-    model.fit(X, y)
-    return model
-
-def main():
+def train_model():
+    """Train the machine learning model."""
     # Load data
-    df = load_historical_data()
-    
+    data = load_data()
+    if data.empty:
+        print("No data available for training")
+        return
+
     # Preprocess data
-    X, y = preprocess_data(df)
-    
-    # Train model
-    model = train_model(X, y)
-    
-    # Evaluate model
-    y_pred = model.predict(X)
-    print(classification_report(y, y_pred))
-    
-    # Save the model
-    joblib.dump(model, MODEL_PATH)
-    print(f"Model saved to {MODEL_PATH}")
+    X, y = preprocess_data(data)
+
+    # Split data into train and test sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Train the model
+    model = RandomForestClassifier(n_estimators=100, random_state=42, class_weight="balanced")
+    model.fit(X_train, y_train)
+
+    # Save the trained model with a timestamp
+    os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    model_filename = f"model_{timestamp}.joblib"
+    joblib.dump(model, os.path.join("model", model_filename))
+    print(f"Model saved to {os.path.join('model', model_filename)}")
+
+    # Evaluate the model on the test set
+    y_pred = model.predict(X_test)
+    print("Model Performance on Test Data:")
+    print(classification_report(y_test, y_pred))
 
 if __name__ == "__main__":
-    main()
+    train_model()

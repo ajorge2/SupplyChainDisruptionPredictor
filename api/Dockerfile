@@ -16,9 +16,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
-# Expose port
-EXPOSE 8000
-
 # Define environment variables (can be overridden in docker-compose)
 ENV MODEL_PATH=ml/model/model.joblib
 ENV REDIS_HOST=redis
@@ -30,4 +27,4 @@ ENV POSTGRES_PASSWORD=postgres
 ENV POSTGRES_DB=supplychaindb
 
 # Run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
