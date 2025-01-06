@@ -33,12 +33,12 @@ __consumer_offsets 10 0
 __consumer_offsets 11 0
 __consumer_offsets 20 3
 __consumer_offsets 47 0
-social_media_data 0 170
+social_media_data 0 250
 __consumer_offsets 18 0
 __consumer_offsets 7 0
 __consumer_offsets 48 0
 __consumer_offsets 22 0
-weather_data 0 17
+weather_data 0 25
 news_data 0 0
 __consumer_offsets 46 0
 __consumer_offsets 23 0

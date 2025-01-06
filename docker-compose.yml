@@ -78,6 +78,8 @@ services:
       - ./ml/model:/app/model  # Share the model directory with the API container
     networks:
       - supplychain_net
+    extra_hosts:
+      - "localhost:host-gateway"
     restart: always
 
   ingestion:
@@ -103,6 +105,19 @@ services:
     volumes:
       - ./ml:/app
     command: python train_model.py
+    networks:
+      - supplychain_net
+    restart: always
+
+  frontend:
+    build:
+      context: ./supply-chain-dashboard
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:80" # Map port 3000 on the host to port 80 in the container
+    depends_on:
+      - api
     networks:
       - supplychain_net
     restart: always

@@ -16,13 +16,14 @@ CREATE TABLE IF NOT EXISTS predictions (
     humidity FLOAT NOT NULL,
     avg_temperature_last_5_days FLOAT NOT NULL,
     avg_humidity_last_5_days FLOAT NOT NULL,
-    disruption_probability FLOAT NOT NULL
+    disruption_probability FLOAT NOT NULL,
+    disruption BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-INSERT INTO predictions (location, temperature, humidity, disruption_probability, disruption)
+INSERT INTO predictions (location, temperature, humidity, avg_temperature_last_5_days, avg_humidity_last_5_days, disruption_probability, disruption)
 VALUES
-('Warehouse_A', 25.5, 60, 0.2, 1),
-('Warehouse_B', 30.2, 55, 0.1, 0);
+('Warehouse_A', 25.5, 60, 24.8, 58, 0.2, TRUE),
+('Warehouse_B', 30.2, 55, 29.5, 54, 0.1, FALSE);
 
 -- Insert Sample Data
 INSERT INTO weather_historical (temperature, humidity, location, timestamp) VALUES
