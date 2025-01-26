@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS predictions (
     disruption BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+-- Insert Sample Data
 INSERT INTO predictions (location, temperature, humidity, avg_temperature_last_5_days, avg_humidity_last_5_days, disruption_probability, disruption)
 VALUES
 ('Warehouse_A', 25.5, 60, 24.8, 58, 0.2, TRUE),
