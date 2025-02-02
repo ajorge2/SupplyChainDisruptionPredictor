@@ -6,11 +6,25 @@ function RealTimeInsights() {
     const [insights, setInsights] = useState([]);
 
     useEffect(() => {
+        console.log('Attempting to connect to WebSocket...');
         const ws = new WebSocket('ws://localhost:8000/ws/realtime');
         
+        ws.onopen = () => {
+            console.log('WebSocket Connected Successfully');
+        };
+        
         ws.onmessage = (event) => {
+            console.log('Received data:', event.data);
             const data = JSON.parse(event.data);
             setInsights(prev => [data, ...prev].slice(0, 10)); // Keep last 10 items
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket Error:', error);
+        };
+
+        ws.onclose = () => {
+            console.log('WebSocket Connection Closed');
         };
 
         return () => ws.close();
