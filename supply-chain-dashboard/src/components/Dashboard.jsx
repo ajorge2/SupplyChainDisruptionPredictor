@@ -2,6 +2,7 @@ import React from "react";
 import RealTimeChart from "./RealTimeChart";
 import Alerts from "./Alerts";
 import Map from "./Map";
+import RealTimeInsights from "./RealTimeInsights";
 
 const Dashboard = () => {
   return (
@@ -17,6 +18,7 @@ const Dashboard = () => {
         <div className="dashboard-charts">
           <RealTimeChart />
           <Alerts />
+          <RealTimeInsights />
         </div>
         <div className="dashboard-map">
           <Map />

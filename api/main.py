@@ -4,6 +4,10 @@ from pydantic import BaseModel
 import joblib
 import os
 import logging
+import json
+from datetime import datetime
+from kafka import KafkaConsumer
+from fastapi import WebSocket
 
 app = FastAPI()
 
@@ -82,3 +86,25 @@ def get_vehicle_locations():
         {"name": "Truck 1", "latitude": 51.505, "longitude": -0.09},
         {"name": "Truck 2", "latitude": 52.505, "longitude": -1.09}
     ]
+
+@app.websocket("/ws/realtime")
+async def realtime_websocket(websocket: WebSocket):
+    await websocket.accept()
+    consumers = {
+        'weather': KafkaConsumer('weather_data', bootstrap_servers=['kafka:9092']),
+        'reddit': KafkaConsumer('social_media_data', bootstrap_servers=['kafka:9092']),
+        'news': KafkaConsumer('news_data', bootstrap_servers=['kafka:9092'])
+    }
+    
+    try:
+        while True:
+            for source, consumer in consumers.items():
+                for message in consumer.poll(timeout_ms=100).values():
+                    data = json.loads(message[0].value.decode('utf-8'))
+                    data['source'] = source  # Add source type to distinguish data
+                    data['timestamp'] = datetime.now().isoformat()
+                    await websocket.send_json(data)
+    except Exception as e:
+        print(f"WebSocket error: {e}")
+    finally:
+        await websocket.close()
