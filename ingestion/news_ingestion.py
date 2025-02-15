@@ -4,6 +4,9 @@ import json
 import time
 import logging
 from kafka import KafkaProducer
+import newsapi
+from time import sleep
+from datetime import datetime, timedelta
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -11,66 +14,144 @@ logger = logging.getLogger(__name__)
 
 # Load environment variables
 NEWS_API_KEY = os.getenv("NEWS_API_KEY")
-if not NEWS_API_KEY:
-    logger.error("Google News API Key is not set. Please check your environment variables.")
-    raise ValueError("Google News API Key is not set. Please check your environment variables.")
-
-NEWS_TOPIC = os.getenv("NEWS_TOPIC", "supply chain disruptions")
-KAFKA_TOPIC = os.getenv("NEWS_TOPIC", "news_data")
+NEWS_SEARCH_QUERY = os.getenv("NEWS_SEARCH_QUERY", "supply chain disruption")  # What to search for
+KAFKA_TOPIC = os.getenv("NEWS_TOPIC", "news_data")  # Where to send the data
 KAFKA_SERVER = os.getenv("KAFKA_SERVER", "kafka:9092")
 FETCH_INTERVAL = int(os.getenv("NEWS_FETCH_INTERVAL", 3600))  # Default to 1 hour
 
 logger.info("Environment variables loaded successfully.")
 
-def fetch_news_data():
-    """Fetch news data from the News API."""
+# Initialize Kafka producer at module level
+logger.info("Initializing Kafka producer...")
+producer = KafkaProducer(
+    bootstrap_servers=KAFKA_SERVER,
+    value_serializer=lambda v: json.dumps(v).encode("utf-8")
+)
+logger.info("Kafka producer initialized successfully.")
+
+logger.info("Current environment variables:")
+logger.info(f"NEWS_API_KEY (length): {len(NEWS_API_KEY) if NEWS_API_KEY else 0}")
+logger.info(f"NEWS_SEARCH_QUERY: {NEWS_SEARCH_QUERY}")
+logger.info(f"KAFKA_TOPIC: {KAFKA_TOPIC}")
+logger.info(f"KAFKA_SERVER: {KAFKA_SERVER}")
+
+def fetch_news():
     try:
-        logger.info(f"Fetching news data for topic: {NEWS_TOPIC}")
-        url = f"https://newsapi.org/v2/everything?q={NEWS_TOPIC}&apiKey={NEWS_API_KEY}"
-        response = requests.get(url)
-        if response.status_code == 200:
-            logger.info("Successfully fetched news data.")
-            return response.json()["articles"]
-        else:
-            logger.error(f"Error fetching news data: {response.status_code} - {response.text}")
+        logger.info("\n=== Starting NewsAPI Request ===")
+        
+        # Check API key
+        if not NEWS_API_KEY:
+            logger.error("NEWS_API_KEY is missing!")
             return []
+            
+        logger.info(f"API Key length: {len(NEWS_API_KEY)}")
+        logger.info(f"Search query: '{NEWS_SEARCH_QUERY}'")
+        
+        # Build request
+        url = "https://newsapi.org/v2/everything"
+        params = {
+            'q': NEWS_SEARCH_QUERY,
+            'apiKey': NEWS_API_KEY,
+            'language': 'en',
+            'pageSize': 10
+        }
+        
+        # Log request details (safely)
+        safe_params = params.copy()
+        safe_params['apiKey'] = 'HIDDEN'
+        logger.info(f"Making request to: {url}")
+        logger.info(f"With parameters: {json.dumps(safe_params, indent=2)}")
+        
+        # Make request with error handling
+        try:
+            response = requests.get(url, params=params, timeout=10)
+            logger.info(f"Response status: {response.status_code}")
+            
+            if response.status_code != 200:
+                logger.error(f"NewsAPI request failed!")
+                logger.error(f"Status code: {response.status_code}")
+                logger.error(f"Response: {response.text}")
+                return []
+                
+            # Parse response
+            data = response.json()
+            logger.info(f"Response status: {data.get('status')}")
+            
+            if data.get('status') != 'ok':
+                logger.error("NewsAPI returned error:")
+                logger.error(json.dumps(data, indent=2))
+                return []
+                
+            articles = data.get('articles', [])
+            logger.info(f"Found {len(articles)} articles")
+            
+            if articles:
+                logger.info("First article preview:")
+                preview = articles[0]
+                logger.info(f"- Title: {preview.get('title')}")
+                logger.info(f"- Source: {preview.get('source', {}).get('name')}")
+                logger.info(f"- Published: {preview.get('publishedAt')}")
+            
+            return articles
+            
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Request failed:")
+            logger.error(f"- Error type: {type(e).__name__}")
+            logger.error(f"- Error message: {str(e)}")
+            return []
+            
     except Exception as e:
-        logger.error(f"Exception while fetching news data: {e}", exc_info=True)
+        logger.error("Unexpected error in fetch_news:")
+        logger.error(f"- Error type: {type(e).__name__}")
+        logger.error(f"- Error message: {str(e)}")
+        logger.error("- Traceback:", exc_info=True)
         return []
 
 def main():
     """Fetch news articles and send them to Kafka."""
     try:
-        # Initialize Kafka producer
-        logger.info("Initializing Kafka producer...")
-        producer = KafkaProducer(
-            bootstrap_servers=KAFKA_SERVER,
-            value_serializer=lambda v: json.dumps(v).encode("utf-8")
-        )
-        logger.info("Kafka producer initialized successfully.")
-
-        seen_articles = set()  # Track seen articles
+        logger.info("=== Starting news ingestion service ===")
+        seen_articles = set()
+        
         while True:
             try:
-                articles = fetch_news_data()
-                for article in articles:
-                    if article["url"] not in seen_articles:
-                        data = {
-                            "title": article["title"],
-                            "description": article["description"],
-                            "url": article["url"],
-                            "published_at": article["publishedAt"]
-                        }
-                        producer.send(KAFKA_TOPIC, data)
-                        seen_articles.add(article["url"])
-                        logger.info(f"Sent article to Kafka: {data}")
+                logger.info("\n=== Starting news fetch cycle ===")
+                logger.info(f"Making NewsAPI request for query: '{NEWS_SEARCH_QUERY}'")
+                
+                articles = fetch_news()
+                
+                if articles:
+                    logger.info(f"Processing {len(articles)} articles...")
+                    for article in articles:
+                        if article["url"] not in seen_articles:
+                            data = {
+                                "source": "news",
+                                "title": article["title"],
+                                "description": article.get("description", ""),
+                                "url": article["url"],
+                                "published_at": article["publishedAt"]
+                            }
+                            producer.send(KAFKA_TOPIC, data)
+                            seen_articles.add(article["url"])
+                            logger.info(f"Sent to Kafka: {data['title'][:100]}...")
+                else:
+                    logger.warning(f"No new articles found for query: '{NEWS_SEARCH_QUERY}'")
+                    
             except Exception as e:
-                logger.error(f"Error processing news articles: {e}", exc_info=True)
-            logger.info(f"Sleeping for {FETCH_INTERVAL} seconds before next fetch.")
-            time.sleep(FETCH_INTERVAL)
+                logger.error(f"Error processing news articles:")
+                logger.error(f"- Error type: {type(e).__name__}")
+                logger.error(f"- Error message: {str(e)}")
+                logger.error("- Traceback:", exc_info=True)
+                
+            logger.info(f"Sleeping for {FETCH_INTERVAL} seconds...")
+            sleep(FETCH_INTERVAL)
+            
     except Exception as e:
-        logger.critical(f"Fatal error in main loop: {e}", exc_info=True)
+        logger.critical(f"Fatal error in main loop:")
+        logger.critical(f"- Error type: {type(e).__name__}")
+        logger.critical(f"- Error message: {str(e)}")
+        logger.critical("- Traceback:", exc_info=True)
 
 if __name__ == "__main__":
-    logger.info("Starting news ingestion script...")
+    logger.info("Starting news ingestion service...")
     main()

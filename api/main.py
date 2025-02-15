@@ -8,6 +8,7 @@ import json
 from datetime import datetime
 from kafka import KafkaConsumer
 from fastapi import WebSocket
+import asyncio
 
 app = FastAPI()
 
@@ -89,22 +90,51 @@ def get_vehicle_locations():
 
 @app.websocket("/ws/realtime")
 async def realtime_websocket(websocket: WebSocket):
+    print("WebSocket endpoint hit")
     await websocket.accept()
-    consumers = {
-        'weather': KafkaConsumer('weather_data', bootstrap_servers=['kafka:9092']),
-        'reddit': KafkaConsumer('social_media_data', bootstrap_servers=['kafka:9092']),
-        'news': KafkaConsumer('news_data', bootstrap_servers=['kafka:9092'])
-    }
     
     try:
+        # Create Kafka consumers
+        consumers = {
+            'weather': KafkaConsumer(
+                'weather_data', 
+                bootstrap_servers=['kafka:9092'],
+                auto_offset_reset='latest',
+                enable_auto_commit=False
+            ),
+            'reddit': KafkaConsumer(
+                'social_media_data', 
+                bootstrap_servers=['kafka:9092'],
+                auto_offset_reset='latest',
+                enable_auto_commit=False
+            ),
+            'news': KafkaConsumer(
+                'news_data', 
+                bootstrap_servers=['kafka:9092'],
+                auto_offset_reset='latest',
+                enable_auto_commit=False
+            )
+        }
+        print("Kafka consumers created")
+        
         while True:
             for source, consumer in consumers.items():
-                for message in consumer.poll(timeout_ms=100).values():
-                    data = json.loads(message[0].value.decode('utf-8'))
-                    data['source'] = source  # Add source type to distinguish data
-                    data['timestamp'] = datetime.now().isoformat()
-                    await websocket.send_json(data)
+                print(f"Polling {source} consumer...")
+                messages = consumer.poll(timeout_ms=100)
+                print(f"Got {len(messages)} message sets from {source}")
+                for message_set in messages.values():
+                    for message in message_set:
+                        data = json.loads(message.value.decode('utf-8'))
+                        data['source'] = source
+                        data['timestamp'] = datetime.now().isoformat()
+                        print(f"Sending data: {data}")
+                        await websocket.send_json(data)
+            await asyncio.sleep(0.1)
+                    
     except Exception as e:
         print(f"WebSocket error: {e}")
+        import traceback
+        print(traceback.format_exc())
     finally:
+        print("WebSocket connection closed")
         await websocket.close()
