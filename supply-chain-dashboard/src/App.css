@@ -1,150 +1,79 @@
-.App {
-  text-align: center;
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* General Dashboard Container */
-.dashboard-container {
-  font-family: 'Arial', sans-serif;
-  background-color: #f9f6f0;
-  padding: 20px;
-}
-
-/* Header Section */
-.dashboard-header {
-  text-align: center;
-  background-color: #f7e8cc;
-  padding: 20px;
-  border-radius: 10px;
-}
-.dashboard-header h1 {
-  font-size: 2.5rem;
-  font-weight: bold;
+body {
   margin: 0;
-}
-.dashboard-header .header-subtitle {
-  font-size: 1.2rem;
-  margin-top: 10px;
-  color: #555;
-}
-
-/* Latest Posts Section */
-.latest-posts {
-  margin-top: 40px;
-}
-.latest-posts h2 {
-  font-size: 2rem;
-  margin-bottom: 20px;
-}
-.posts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-}
-.post-card {
-  background: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-.post-card img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-}
-.post-card h3 {
-  font-size: 1.5rem;
-  margin: 10px;
-}
-.post-card p {
-  font-size: 1rem;
-  margin: 10px;
-  color: #777;
-}
-
-/* Dashboard Main Section */
-.dashboard-main {
   display: flex;
-  justify-content: space-between;
-  margin-top: 40px;
-}
-.dashboard-charts {
-  flex: 1;
-  margin-right: 20px;
-}
-.dashboard-map {
-  flex: 1;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
 }
 
-/* Services Section */
-.services {
-  margin-top: 40px;
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+.card {
+  padding: 2em;
+}
+
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
   text-align: center;
 }
-.services h2 {
-  font-size: 2rem;
-  margin-bottom: 20px;
-}
-.services-grid {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-}
-.service-card {
-  background: #f7e8cc;
-  border-radius: 10px;
-  padding: 20px;
-  width: 200px;
-  text-align: center;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-.service-card h3 {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-}
-.service-card p {
-  font-size: 1rem;
-  margin-bottom: 20px;
-}
-.service-card button {
-  background-color: #e58e26;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  padding: 10px 20px;
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
   cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
 }

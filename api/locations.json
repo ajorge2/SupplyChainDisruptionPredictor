@@ -1,0 +1,29 @@
+{
+  "us_cities": [
+    "New York City", "Boston", "Philadelphia", "Miami", "Atlanta", "Charlotte", "Nashville",
+    "Chicago", "Detroit", "Minneapolis", "St. Louis", "Houston", "Dallas", "Phoenix", "Austin",
+    "Los Angeles", "San Francisco", "Seattle", "Denver", "Memphis", "Anchorage", "Louisville"
+  ],
+  "countries": [
+    "China", "Taiwan", "South Korea", "Japan", "Germany", "Mexico", "Canada", "Vietnam", "India", "Brazil",
+    "Poland", "Chile", "Argentina", "Guatemala", "DR Congo", "Tanzania", "Uzbekistan", "Papua New Guinea", "Peru", "Bolivia", "Kazakhstan", "Turkey", "Philippines", "Colombia", "Finland", "Sweden", "Ireland", "Norway", "Bahrain", "Iceland", "Qatar", "Saudi Arabia", "Mozambique", "New Caledonia", "Cuba", "Madagascar", "Greece", "Dominican Republic", "Zambia", "Burma", "Rwanda", "Spain", "Portugal", "Austria", "Armenia", "Mongolia", "Bulgaria", "Georgia", "Morocco", "Venezuela", "Nigeria", "Libya", "Ukraine", "Romania", "Hungary", "Serbia", "Uruguay", "Paraguay", "Pakistan", "Turkmenistan", "Egypt", "South Africa", "New Zealand", "Switzerland", "Israel", "Belgium", "Netherlands", "France", "United Kingdom", "Russia", "Australia", "Indonesia", "Malaysia", "Thailand", "Singapore", "UAE", "Italy", "Ethiopia", "Bangladesh", "Cambodia",
+    "Ghana", "Zimbabwe", "Botswana", "Congo", "Algeria", "Trinidad and Tobago", "Myanmar", "Honduras", "Ecuador", "Costa Rica", "Panama", "Cameroon", "Ivory Coast", "European Union", "Czech Republic", "Burkina Faso"
+  ],
+  "city_to_country": {
+    "Shenzhen": "China",
+    "Zhengzhou": "China",
+    "Shanghai": "China",
+    "Singapore": "Singapore",
+    "Rotterdam": "Netherlands",
+    "Antwerp": "Belgium",
+    "Dubai": "UAE",
+    "Hamburg": "Germany",
+    "Busan": "South Korea",
+    "Hong Kong": "China",
+    "Jeddah": "Saudi Arabia",
+    "Cologne": "Germany",
+    "Taipei": "Taiwan",
+    "Tokyo": "Japan"
+
+  }
+} 

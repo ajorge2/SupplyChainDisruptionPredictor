@@ -1,0 +1,453 @@
+{
+  "raw_materials": {
+    "metals": {
+      "precious_metals": {
+        "gold": {
+          "regions": ["China", "Australia", "Russia", "United States", "Canada", "Peru", "South Africa", "Ghana", "Mexico", "Indonesia", "Brazil", "Papua New Guinea", "Uzbekistan", "DR Congo", "Tanzania"],
+          "uses": ["electronics", "jewelry", "dental", "aerospace", "medical_devices", "investment", "currency_backing"]
+        },
+        "silver": {
+          "regions": ["Mexico", "Peru", "China", "Russia", "Chile", "Australia", "Poland", "Bolivia", "United States", "Argentina", "Guatemala", "DR Congo", "Kazakhstan", "Indonesia", "Turkey"],
+          "uses": ["electronics", "jewelry", "photography", "solar_panels", "medical_devices", "water_purification", "batteries"]
+        },
+        "platinum": {
+          "regions": ["South Africa", "Russia", "Zimbabwe", "Canada", "United States", "Colombia", "Ethiopia", "China", "Finland", "Tanzania", "DR Congo", "Botswana", "Australia", "Brazil", "Philippines"],
+          "uses": ["automotive_catalysts", "jewelry", "chemical_processing", "medical_devices", "electronics", "fuel_cells"]
+        },
+        "palladium": {
+          "regions": ["Russia", "South Africa", "Canada", "United States", "Zimbabwe", "Australia", "Finland", "Colombia", "Ethiopia", "China", "DR Congo", "Botswana", "Brazil", "Philippines", "Tanzania"],
+          "uses": ["automotive_catalysts", "electronics", "dental", "chemical_processing", "jewelry", "hydrogen_purification"]
+        }
+      },
+      "base_metals": {
+        "copper": {
+          "regions": ["Chile", "Peru", "China", "Congo", "United States", "Australia", "Russia", "Zambia", "Mexico", "Indonesia", "Canada", "Poland", "Kazakhstan", "DR Congo", "Brazil"],
+          "uses": ["electrical_wiring", "electronics", "construction", "plumbing", "industrial_machinery", "renewable_energy", "automotive", "telecommunications"]
+        },
+        "aluminum": {
+          "regions": ["China", "Russia", "Canada", "India", "UAE", "Australia", "Brazil", "Norway", "Bahrain", "Iceland", "South Africa", "Qatar", "Saudi Arabia", "Malaysia", "Mozambique"],
+          "uses": ["packaging", "construction", "automotive", "aerospace", "consumer_goods", "electrical_equipment", "marine", "defense"]
+        },
+        "steel": {
+          "regions": ["China", "Japan", "India", "United States", "Russia", "South Korea", "Germany", "Turkey", "Brazil", "Italy", "Ukraine", "Iran", "Mexico", "France", "United Kingdom"],
+          "uses": ["construction", "automotive", "machinery", "shipbuilding", "infrastructure", "consumer_goods", "defense", "energy"]
+        },
+        "zinc": {
+          "regions": ["China", "Peru", "Australia", "United States", "India", "Mexico", "Bolivia", "Kazakhstan", "Canada", "Russia", "Iran", "DR Congo", "Brazil", "Sweden", "Ireland"],
+          "uses": ["galvanizing", "batteries", "alloys", "chemicals", "rubber", "paints", "pharmaceuticals"]
+        },
+        "nickel": {
+          "regions": ["Indonesia", "Philippines", "Russia", "New Caledonia", "Australia", "Canada", "Brazil", "China", "Colombia", "Cuba", "DR Congo", "Madagascar", "South Africa", "Greece", "Dominican Republic"],
+          "uses": ["stainless_steel", "batteries", "alloys", "electroplating", "chemicals", "aerospace", "marine"]
+        },
+        "lead": {
+          "regions": ["China", "Australia", "United States", "Peru", "Mexico", "Russia", "India", "Bolivia", "Sweden", "Turkey", "Iran", "Poland", "Kazakhstan", "South Africa", "DR Congo"],
+          "uses": ["batteries", "radiation_shielding", "construction", "alloys", "chemicals", "cable_sheathing", "ammunition"]
+        }
+      },
+      "rare_metals": {
+        "lithium": {
+          "regions": ["Chile", "Australia", "China", "Argentina", "Zimbabwe", "Portugal", "Brazil", "United States", "Canada", "DR Congo", "Mexico", "Peru", "Bolivia", "Finland", "Spain"],
+          "uses": ["batteries", "electronics", "ceramics", "glass", "lubricants", "air_treatment", "nuclear_fusion", "aerospace"]
+        },
+        "cobalt": {
+          "regions": ["DR Congo", "Russia", "Australia", "Cuba", "Philippines", "Canada", "Madagascar", "Papua New Guinea", "China", "Morocco", "Brazil", "South Africa", "Zambia", "New Caledonia", "Burma"],
+          "uses": ["batteries", "alloys", "catalysts", "magnets", "pigments", "medical_isotopes", "aerospace"]
+        },
+        "tungsten": {
+          "regions": ["China", "Russia", "Vietnam", "Bolivia", "Rwanda", "Spain", "Portugal", "Austria", "DR Congo", "Peru", "Brazil", "Burma", "Australia", "Canada", "United States"],
+          "uses": ["cutting_tools", "electronics", "alloys", "lighting", "defense", "mining", "aerospace"]
+        },
+        "molybdenum": {
+          "regions": ["China", "Chile", "United States", "Peru", "Mexico", "Armenia", "Iran", "Russia", "Canada", "Mongolia", "Turkey", "Kazakhstan", "Uzbekistan", "Bulgaria", "Georgia"],
+          "uses": ["alloys", "catalysts", "lubricants", "electronics", "chemicals", "steel_production", "aerospace"]
+        },
+        "tantalum": {
+          "regions": ["DR Congo", "Rwanda", "Brazil", "China", "Ethiopia", "Mozambique", "Nigeria", "Australia", "Canada", "Burma", "Thailand", "Malaysia", "Indonesia", "Colombia", "Venezuela"],
+          "uses": ["electronics", "alloys", "chemicals", "medical_devices", "aerospace", "defense", "nuclear_reactors"]
+        }
+      }
+    },
+    "semiconductors": {
+      "silicon": {
+        "regions": ["China", "Russia", "Brazil", "Norway", "United States", "France", "Malaysia", "Australia", "Germany", "Japan", "South Korea", "Taiwan", "India", "Canada", "Ukraine"],
+        "manufacturers": ["Wacker Chemie", "Hemlock Semiconductor", "REC Silicon", "Tokuyama", "Mitsubishi", "OSAKA Titanium", "GCL-Poly", "Xinte Energy", "Daqo New Energy", "Commodore"],
+        "uses": ["solar_panels", "electronics", "alloys", "chemicals", "construction", "medical_devices", "aerospace"]
+      },
+      "chips": {
+        "regions": ["Taiwan", "South Korea", "China", "United States", "Japan", "Germany", "Netherlands", "Israel", "Singapore", "Malaysia", "France", "United Kingdom", "Italy", "Spain", "India"],
+        "manufacturers": ["TSMC", "Samsung", "Intel", "GlobalFoundries", "UMC", "SMIC", "Tower Semiconductor", "Powerchip", "Vanguard", "NXP", "STMicroelectronics", "Infineon", "Texas Instruments", "Renesas", "ON Semiconductor"],
+        "uses": ["computers", "smartphones", "automotive", "IoT_devices", "medical_equipment", "industrial_automation", "defense", "aerospace"]
+      },
+      "memory": {
+        "regions": ["South Korea", "Japan", "Taiwan", "United States", "China", "Singapore", "Malaysia", "Israel", "Germany", "Netherlands", "France", "United Kingdom", "Italy", "Spain", "India"],
+        "manufacturers": ["Samsung", "SK Hynix", "Micron", "Kioxia", "Western Digital", "Intel", "Nanya", "Powerchip", "Winbond", "ISSI", "Cypress", "Renesas", "Everspin", "Adesto", "GigaDevice"],
+        "uses": ["computers", "smartphones", "servers", "data_centers", "automotive", "consumer_electronics", "industrial", "medical_devices"]
+      }
+    },
+    "chemicals": {
+      "petroleum_products": {
+        "crude_oil": {
+          "regions": ["Saudi Arabia", "Russia", "United States", "Canada", "Iraq", "China", "UAE", "Brazil", "Kuwait", "Iran", "Venezuela", "Nigeria", "Libya", "Mexico", "Norway"],
+          "uses": ["fuel", "plastics", "chemicals", "lubricants", "asphalt", "petrochemicals", "pharmaceuticals", "cosmetics"]
+        },
+        "natural_gas": {
+          "regions": ["United States", "Russia", "Iran", "Qatar", "Canada", "China", "Norway", "Saudi Arabia", "Algeria", "Australia", "Turkmenistan", "UAE", "Nigeria", "Venezuela", "Egypt"],
+          "uses": ["energy", "fertilizers", "chemicals", "plastics", "refrigeration", "transportation", "power_generation"]
+        }
+      },
+      "industrial_chemicals": {
+        "ammonia": {
+          "regions": ["China", "Russia", "United States", "India", "Trinidad and Tobago", "Ukraine", "Indonesia", "Egypt", "Saudi Arabia", "Qatar", "Canada", "Germany", "Netherlands", "Belgium", "France"],
+          "manufacturers": ["CF Industries", "Yara", "Nutrien", "OCI", "TogliattiAzot", "QAFCO", "SABIC", "BASF", "Koch", "Mosaic"],
+          "uses": ["fertilizers", "cleaning_products", "refrigeration", "pharmaceuticals", "textiles", "explosives", "water_treatment"]
+        },
+        "sulfuric_acid": {
+          "regions": ["China", "United States", "Russia", "India", "Morocco", "Japan", "South Korea", "Brazil", "Canada", "Mexico", "Germany", "France", "Spain", "Italy", "United Kingdom"],
+          "manufacturers": ["Mosaic", "Nutrien", "PhosAgro", "OCP", "Yara", "BASF", "Dow", "DuPont", "Arkema", "Solvay"],
+          "uses": ["fertilizers", "chemicals", "mining", "batteries", "water_treatment", "detergents", "textiles"]
+        },
+        "caustic_soda": {
+          "regions": ["China", "United States", "Germany", "Japan", "South Korea", "India", "Brazil", "Russia", "France", "Italy", "Spain", "United Kingdom", "Netherlands", "Belgium", "Canada"],
+          "manufacturers": ["Dow", "Olin", "Formosa Plastics", "Tosoh", "Shin-Etsu", "BASF", "Solvay", "Arkema", "INEOS", "Westlake"],
+          "uses": ["pulp_and_paper", "aluminum_production", "chemicals", "soaps", "textiles", "water_treatment", "food_processing"]
+        }
+      },
+      "plastics": {
+        "polyethylene": {
+          "regions": ["China", "United States", "Germany", "Japan", "South Korea", "Saudi Arabia", "Netherlands", "Belgium", "Taiwan", "India", "Brazil", "Russia", "France", "Italy", "United Kingdom"],
+          "manufacturers": ["BASF", "Dow", "ExxonMobil", "SABIC", "LyondellBasell", "INEOS", "Formosa Plastics", "LG Chem", "Reliance", "Braskem", "Sinopec", "PetroChina", "Chevron Phillips", "Nova Chemicals", "Total"],
+          "uses": ["packaging", "electronics", "automotive", "construction", "medical_devices", "consumer_goods", "agriculture", "textiles"]
+        },
+        "polypropylene": {
+          "regions": ["China", "United States", "Germany", "Japan", "South Korea", "Saudi Arabia", "Netherlands", "Belgium", "Taiwan", "India", "Brazil", "Russia", "France", "Italy", "United Kingdom"],
+          "manufacturers": ["LyondellBasell", "SABIC", "ExxonMobil", "BASF", "INEOS", "Formosa Plastics", "LG Chem", "Reliance", "Braskem", "Sinopec", "PetroChina", "Chevron Phillips", "Nova Chemicals", "Total", "Borealis"],
+          "uses": ["packaging", "automotive", "textiles", "medical_devices", "consumer_goods", "construction", "agriculture", "furniture"]
+        },
+        "PVC": {
+          "regions": ["China", "United States", "Germany", "Japan", "South Korea", "Taiwan", "India", "Brazil", "Russia", "France", "Italy", "United Kingdom", "Netherlands", "Belgium", "Spain"],
+          "manufacturers": ["Shin-Etsu", "Formosa Plastics", "INEOS", "Westlake", "Mexichem", "LG Chem", "Reliance", "Sinopec", "PetroChina", "Braskem", "BASF", "Solvay", "Arkema", "Kem One", "Vynova"],
+          "uses": ["construction", "pipes", "cables", "medical_devices", "automotive", "packaging", "furniture", "flooring"]
+        }
+      }
+    },
+    "agricultural": {
+      "grains": {
+        "wheat": {
+          "regions": ["China", "India", "Russia", "United States", "France", "Canada", "Germany", "Ukraine", "Australia", "Pakistan", "Turkey", "Argentina", "Kazakhstan", "United Kingdom", "Poland"],
+          "uses": ["food", "animal_feed", "biofuels", "industrial_uses", "alcohol_production", "starch", "gluten"]
+        },
+        "corn": {
+          "regions": ["United States", "China", "Brazil", "Argentina", "Ukraine", "India", "Mexico", "Indonesia", "South Africa", "Russia", "France", "Romania", "Hungary", "Serbia", "Canada"],
+          "uses": ["food", "animal_feed", "biofuels", "industrial_uses", "sweeteners", "starch", "oil"]
+        },
+        "rice": {
+          "regions": ["China", "India", "Indonesia", "Bangladesh", "Vietnam", "Thailand", "Myanmar", "Philippines", "Brazil", "Japan", "United States", "Pakistan", "Cambodia", "South Korea", "Egypt"],
+          "uses": ["food", "animal_feed", "industrial_uses", "alcohol_production", "rice_bran_oil", "cosmetics", "paper"]
+        }
+      },
+      "oilseeds": {
+        "soybeans": {
+          "regions": ["Brazil", "United States", "Argentina", "China", "India", "Paraguay", "Canada", "Russia", "Ukraine", "Bolivia", "Uruguay", "South Africa", "Indonesia", "Malaysia", "Thailand"],
+          "uses": ["food", "animal_feed", "biofuels", "industrial_uses", "oil", "protein", "textiles"]
+        },
+        "palm_oil": {
+          "regions": ["Indonesia", "Malaysia", "Thailand", "Colombia", "Nigeria", "Guatemala", "Honduras", "Brazil", "Papua New Guinea", "Ecuador", "Costa Rica", "Mexico", "Ghana", "Cameroon", "Ivory Coast"],
+          "uses": ["food", "biofuels", "cosmetics", "cleaning_products", "industrial_uses", "animal_feed", "pharmaceuticals"]
+        },
+        "rapeseed": {
+          "regions": ["Canada", "China", "India", "European Union", "Australia", "Ukraine", "Russia", "United States", "Pakistan", "Chile", "Japan", "South Korea", "Mexico", "Brazil", "Argentina"],
+          "uses": ["food", "biofuels", "industrial_uses", "animal_feed", "lubricants", "cosmetics", "pharmaceuticals"]
+        }
+      },
+      "natural_fibers": {
+        "cotton": {
+          "regions": ["China", "India", "United States", "Pakistan", "Brazil", "Australia", "Turkey", "Uzbekistan", "Greece", "Egypt", "Argentina", "Mexico", "Turkmenistan", "Kazakhstan", "Burkina Faso"],
+          "uses": ["textiles", "clothing", "medical_supplies", "industrial_uses", "paper", "furniture", "automotive", "construction"]
+        },
+        "wool": {
+          "regions": ["Australia", "China", "New Zealand", "United Kingdom", "South Africa", "Argentina", "Uruguay", "Turkey", "Iran", "India", "United States", "Russia", "Spain", "Italy", "France"],
+          "uses": ["textiles", "clothing", "carpets", "furniture", "insulation", "industrial_uses", "medical_supplies", "sports_equipment"]
+        },
+        "silk": {
+          "regions": ["China", "India", "Uzbekistan", "Thailand", "Brazil", "Vietnam", "Japan", "South Korea", "Italy", "France", "Spain", "Romania", "Bulgaria", "Greece", "Turkey"],
+          "uses": ["textiles", "clothing", "medical_sutures", "cosmetics", "industrial_uses", "furniture", "automotive", "electronics"]
+        }
+      }
+    },
+    "minerals": {
+      "construction": {
+        "cement": {
+          "regions": ["China", "India", "United States", "Vietnam", "Turkey", "Brazil", "Russia", "Indonesia", "Iran", "Egypt", "Japan", "South Korea", "Mexico", "Thailand", "Germany"],
+          "manufacturers": ["LafargeHolcim", "CNBM", "Anhui Conch", "HeidelbergCement", "Cemex", "CRH", "UltraTech", "Votorantim", "Taiheiyo", "Buzzi Unicem"],
+          "uses": ["construction", "infrastructure", "concrete", "mortar", "stucco", "grout", "road_building", "marine_structures"]
+        },
+        "sand": {
+          "regions": ["United States", "China", "India", "Australia", "Brazil", "Russia", "Canada", "Ukraine", "France", "Germany", "Italy", "Spain", "United Kingdom", "Japan", "South Korea"],
+          "uses": ["construction", "glass", "electronics", "fracking", "concrete", "mortar", "landscaping", "water_filtration"]
+        },
+        "gravel": {
+          "regions": ["United States", "China", "India", "Russia", "Brazil", "Australia", "Canada", "Germany", "France", "United Kingdom", "Italy", "Spain", "Japan", "South Korea", "Mexico"],
+          "uses": ["construction", "concrete", "road_building", "drainage", "landscaping", "railroad_ballast", "water_filtration", "sports_fields"]
+        }
+      },
+      "industrial": {
+        "limestone": {
+          "regions": ["China", "United States", "India", "Russia", "Brazil", "Japan", "Germany", "Italy", "France", "United Kingdom", "Spain", "Canada", "Australia", "Mexico", "Turkey"],
+          "uses": ["construction", "steel_production", "cement", "lime", "chemicals", "agriculture", "water_treatment", "glass"]
+        },
+        "gypsum": {
+          "regions": ["China", "United States", "Iran", "Thailand", "Spain", "Russia", "Brazil", "Mexico", "Australia", "Canada", "Germany", "France", "United Kingdom", "Italy", "Japan"],
+          "uses": ["construction", "plaster", "drywall", "cement", "agriculture", "food_additive", "medical_devices", "art_supplies"]
+        },
+        "kaolin": {
+          "regions": ["United States", "Brazil", "United Kingdom", "China", "Ukraine", "Germany", "India", "Czech Republic", "France", "Spain", "Italy", "Turkey", "Iran", "South Korea", "Japan"],
+          "uses": ["paper", "ceramics", "paints", "cosmetics", "pharmaceuticals", "rubber", "plastics", "fiberglass"]
+        }
+      }
+    }
+  },
+  "components": {
+    "electronics": {
+      "displays": {
+        "regions": ["South Korea", "Japan", "China", "Taiwan", "United States", "Germany", "Netherlands", "Israel", "Singapore", "Malaysia"],
+        "manufacturers": ["Samsung", "LG", "BOE", "AUO", "Innolux", "Sharp", "Japan Display", "Tianma", "CSOT", "HKC"],
+        "uses": ["smartphones", "televisions", "computers", "automotive", "medical_devices", "industrial_displays"]
+      },
+      "batteries": {
+        "regions": ["China", "South Korea", "Japan", "United States", "Germany", "France", "Sweden", "Canada", "Australia", "India"],
+        "manufacturers": ["CATL", "LG Energy", "Panasonic", "BYD", "Samsung SDI", "SK Innovation", "AESC", "Northvolt", "SVOLT", "Farasis"],
+        "uses": ["electric_vehicles", "smartphones", "laptops", "grid_storage", "industrial_equipment", "medical_devices"]
+      },
+      "sensors": {
+        "regions": ["Germany", "Japan", "United States", "Netherlands", "Switzerland", "France", "Italy", "South Korea", "Taiwan", "China"],
+        "manufacturers": ["Bosch", "Sony", "Texas Instruments", "STMicroelectronics", "NXP", "Infineon", "Analog Devices", "ams", "Omron", "Honeywell"],
+        "uses": ["automotive", "smartphones", "industrial", "medical_devices", "IoT_devices", "consumer_electronics"]
+      }
+    },
+    "automotive": {
+      "engines": {
+        "regions": ["Germany", "Japan", "United States", "China", "South Korea", "France", "Italy", "United Kingdom", "Sweden", "India"],
+        "manufacturers": ["BMW", "Toyota", "Ford", "Volkswagen", "Honda", "General Motors", "Hyundai", "Mercedes-Benz", "Nissan", "Fiat"],
+        "uses": ["cars", "trucks", "industrial", "marine", "aviation", "power_generation"]
+      },
+      "tires": {
+        "regions": ["China", "United States", "Japan", "France", "Germany", "South Korea", "India", "Thailand", "Indonesia", "Brazil"],
+        "manufacturers": ["Michelin", "Bridgestone", "Goodyear", "Continental", "Pirelli", "Sumitomo", "Yokohama", "Hankook", "Cheng Shin", "Giti"],
+        "uses": ["automotive", "industrial", "aviation", "agricultural", "construction", "mining"]
+      }
+    }
+  },
+  "manufacturing": {
+    "assembly": {
+      "foxconn": {
+        "regions": ["Shenzhen", "Zhengzhou", "India", "Vietnam", "Mexico", "Brazil", "Czech Republic", "Hungary", "Slovakia", "United States"],
+        "products": ["smartphones", "computers", "electronics", "servers", "networking_equipment", "consumer_electronics"]
+      },
+      "pegatron": {
+        "regions": ["Taiwan", "China", "Vietnam", "Mexico", "Czech Republic", "Indonesia", "Malaysia", "Thailand", "Brazil", "United States"],
+        "products": ["computers", "electronics", "components", "networking_equipment", "consumer_electronics", "industrial_equipment"]
+      }
+    },
+    "textiles": {
+      "cotton": {
+        "regions": ["China", "India", "United States", "Pakistan", "Brazil", "Australia", "Turkey", "Uzbekistan", "Greece", "Egypt"],
+        "uses": ["clothing", "furniture", "medical", "industrial", "home_textiles", "automotive"]
+      },
+      "synthetic": {
+        "regions": ["China", "Taiwan", "South Korea", "Japan", "United States", "Germany", "Italy", "Turkey", "India", "Indonesia"],
+        "manufacturers": ["Toray", "Teijin", "Hyosung", "Indorama", "Reliance", "Lenzing", "Asahi Kasei", "Kolon", "Huvis", "Formosa"],
+        "uses": ["clothing", "industrial", "sports", "automotive", "medical", "construction"]
+      }
+    }
+  },
+  "logistics": {
+    "shipping": {
+      "ports": {
+        "regions": ["Shanghai", "Singapore", "Rotterdam", "Antwerp", "Dubai", "Los Angeles", "Hamburg", "Busan", "Hong Kong", "Jeddah"],
+        "uses": ["global_trade", "container_shipping", "bulk_cargo", "oil_tankers", "cruise_ships", "ferry_services"]
+      },
+      "airports": {
+        "regions": ["Hong Kong", "Dubai", "Memphis", "Anchorage", "Louisville", "Cologne", "Shanghai", "Singapore", "Tokyo", "Miami"],
+        "uses": ["air_freight", "express_shipping", "passenger_transport", "cargo_hubs", "logistics_centers"]
+      }
+    },
+    "warehousing": {
+      "regions": ["United States", "China", "Germany", "Japan", "United Kingdom", "Netherlands", "France", "Singapore", "UAE", "South Korea"],
+      "uses": ["storage", "distribution", "fulfillment", "cross_docking", "value_added_services", "returns_processing"]
+    }
+  },
+  "consumer_goods": {
+    "food": {
+      "produce": {
+        "fruits": {
+          "apples": {
+            "regions": ["United States", "China", "Turkey", "Poland", "Italy", "France", "Chile", "South Africa", "New Zealand", "Argentina"],
+            "uses": ["fresh_consumption", "juice", "baking", "cider", "dried_fruits", "baby_food"]
+          },
+          "bananas": {
+            "regions": ["Ecuador", "Philippines", "Costa Rica", "Colombia", "Guatemala", "Honduras", "Mexico", "Brazil", "Dominican Republic", "Panama"],
+            "uses": ["fresh_consumption", "baking", "smoothies", "baby_food", "dried_fruits", "processed_foods"]
+          },
+          "citrus": {
+            "regions": ["Spain", "United States", "Brazil", "China", "Mexico", "Turkey", "South Africa", "Egypt", "Morocco", "Italy"],
+            "uses": ["fresh_consumption", "juice", "flavoring", "essential_oils", "cleaning_products", "beverages"]
+          }
+        },
+        "vegetables": {
+          "potatoes": {
+            "regions": ["China", "India", "United States", "Russia", "Ukraine", "Germany", "Poland", "Netherlands", "France", "United Kingdom"],
+            "uses": ["fresh_consumption", "processed_foods", "snacks", "starch", "animal_feed", "industrial_uses"]
+          },
+          "tomatoes": {
+            "regions": ["China", "India", "United States", "Turkey", "Italy", "Spain", "Iran", "Egypt", "Mexico", "Brazil"],
+            "uses": ["fresh_consumption", "sauces", "processed_foods", "juice", "dried_tomatoes", "canned_products"]
+          }
+        }
+      },
+      "dairy": {
+        "milk": {
+          "regions": ["United States", "India", "China", "Brazil", "Germany", "Russia", "France", "New Zealand", "Turkey", "United Kingdom"],
+          "manufacturers": ["Nestlé", "Danone", "Lactalis", "Fonterra", "Arla", "Dairy Farmers of America", "Saputo", "Yili", "Mengniu", "Amul"],
+          "uses": ["beverages", "cheese", "yogurt", "butter", "ice_cream", "powdered_milk"]
+        },
+        "cheese": {
+          "regions": ["United States", "Germany", "France", "Italy", "Netherlands", "Poland", "Russia", "Brazil", "Argentina", "Australia"],
+          "manufacturers": ["Lactalis", "Fonterra", "Arla", "Saputo", "Dairy Farmers of America", "Bel Group", "Kraft Heinz", "Bongrain", "Emmental", "Gruyère"],
+          "uses": ["dairy_products", "cooking", "snacks", "pizza", "sandwiches", "processed_foods"]
+        }
+      },
+      "meat": {
+        "beef": {
+          "regions": ["United States", "Brazil", "China", "Argentina", "Australia", "India", "Mexico", "Russia", "Canada", "New Zealand"],
+          "manufacturers": ["JBS", "Tyson Foods", "Cargill", "Marfrig", "NH Foods", "Minerva", "BRF", "Hormel", "National Beef", "Australian Agricultural Company"],
+          "uses": ["fresh_meat", "processed_foods", "restaurants", "fast_food", "canned_products", "pet_food"]
+        },
+        "poultry": {
+          "regions": ["United States", "Brazil", "China", "Russia", "Mexico", "India", "Thailand", "Turkey", "Poland", "Argentina"],
+          "manufacturers": ["Tyson Foods", "JBS", "BRF", "Cargill", "New Hope Liuhe", "Wen's Food Group", "CP Foods", "Hormel", "Sanderson Farms", "Perdue"],
+          "uses": ["fresh_meat", "processed_foods", "restaurants", "fast_food", "canned_products", "pet_food"]
+        }
+      }
+    },
+    "household": {
+      "cleaning": {
+        "detergents": {
+          "regions": ["United States", "Germany", "China", "Japan", "United Kingdom", "France", "Netherlands", "India", "Brazil", "South Korea"],
+          "manufacturers": ["Procter & Gamble", "Unilever", "Henkel", "Colgate-Palmolive", "Reckitt Benckiser", "Kao", "Lion", "Church & Dwight", "SC Johnson", "Clorox"],
+          "uses": ["laundry", "dishwashing", "household_cleaning", "industrial_cleaning", "personal_care", "automotive"]
+        },
+        "paper_products": {
+          "regions": ["United States", "China", "Canada", "Japan", "Germany", "Sweden", "Finland", "Brazil", "Indonesia", "Russia"],
+          "manufacturers": ["Procter & Gamble", "Kimberly-Clark", "Essity", "Georgia-Pacific", "Sofidel", "Metsä Group", "UPM", "Stora Enso", "Asia Pulp & Paper", "Domtar"],
+          "uses": ["bathroom", "kitchen", "cleaning", "packaging", "printing", "industrial"]
+        }
+      },
+      "furniture": {
+        "wood": {
+          "regions": ["China", "Vietnam", "United States", "Italy", "Germany", "Poland", "Malaysia", "Indonesia", "Thailand", "Brazil"],
+          "manufacturers": ["IKEA", "Ashley Furniture", "La-Z-Boy", "Herman Miller", "Steelcase", "HNI", "Okamura", "Kokuyo", "Haworth", "Knoll"],
+          "uses": ["tables", "chairs", "cabinets", "beds", "shelving", "outdoor_furniture"]
+        },
+        "upholstery": {
+          "regions": ["China", "United States", "Mexico", "Italy", "Turkey", "Vietnam", "Malaysia", "Thailand", "Indonesia", "Brazil"],
+          "manufacturers": ["IKEA", "Ashley Furniture", "La-Z-Boy", "Herman Miller", "Steelcase", "HNI", "Okamura", "Kokuyo", "Haworth", "Knoll"],
+          "uses": ["sofas", "chairs", "beds", "automotive", "office_furniture", "outdoor_furniture"]
+        }
+      }
+    },
+    "electronics": {
+      "computers": {
+        "laptops": {
+          "regions": ["China", "Taiwan", "United States", "Malaysia", "Vietnam", "Mexico", "Thailand", "Brazil", "India", "Czech Republic"],
+          "manufacturers": ["Dell", "HP", "Lenovo", "Apple", "Asus", "Acer", "MSI", "Razer", "Microsoft", "Samsung"],
+          "uses": ["personal_computing", "business", "education", "gaming", "content_creation", "professional_work"]
+        },
+        "desktops": {
+          "regions": ["China", "Taiwan", "United States", "Mexico", "Malaysia", "Vietnam", "Thailand", "Brazil", "India", "Czech Republic"],
+          "manufacturers": ["Dell", "HP", "Apple", "Lenovo", "Asus", "Acer", "MSI", "Corsair", "Alienware", "Origin PC"],
+          "uses": ["personal_computing", "business", "gaming", "content_creation", "professional_work", "servers"]
+        }
+      },
+      "smartphones": {
+        "regions": ["China", "Vietnam", "India", "South Korea", "Brazil", "Mexico", "Indonesia", "Malaysia", "Thailand", "Turkey"],
+        "manufacturers": ["Apple", "Samsung", "Xiaomi", "Oppo", "Vivo", "Huawei", "Realme", "OnePlus", "Motorola", "Google"],
+        "uses": ["communication", "entertainment", "business", "photography", "gaming", "mobile_commerce"]
+      },
+      "appliances": {
+        "refrigerators": {
+          "regions": ["China", "United States", "Mexico", "South Korea", "Turkey", "Poland", "Italy", "India", "Brazil", "Thailand"],
+          "manufacturers": ["Whirlpool", "LG", "Samsung", "Haier", "Electrolux", "Bosch", "Miele", "Panasonic", "Sharp", "Hitachi"],
+          "uses": ["kitchen", "commercial", "storage", "medical", "laboratory", "industrial"]
+        },
+        "washing_machines": {
+          "regions": ["China", "United States", "Germany", "South Korea", "Turkey", "Poland", "Italy", "India", "Brazil", "Thailand"],
+          "manufacturers": ["Whirlpool", "LG", "Samsung", "Haier", "Electrolux", "Bosch", "Miele", "Panasonic", "Sharp", "Hitachi"],
+          "uses": ["laundry", "commercial", "industrial", "hotel", "healthcare", "textile_industry"]
+        }
+      }
+    },
+    "clothing": {
+      "casual": {
+        "t_shirts": {
+          "regions": ["China", "Bangladesh", "Vietnam", "India", "Turkey", "Mexico", "Indonesia", "Cambodia", "Pakistan", "Ethiopia"],
+          "manufacturers": ["Nike", "Adidas", "H&M", "Zara", "Uniqlo", "Gap", "Under Armour", "Puma", "Vans", "The North Face"],
+          "uses": ["everyday_wear", "sports", "fashion", "promotional", "work_uniforms", "retail"]
+        },
+        "jeans": {
+          "regions": ["China", "Mexico", "Bangladesh", "Vietnam", "Turkey", "India", "Pakistan", "Cambodia", "Indonesia", "Ethiopia"],
+          "manufacturers": ["Levi's", "Wrangler", "Gap", "H&M", "Zara", "Uniqlo", "Calvin Klein", "Tommy Hilfiger", "Guess", "Diesel"],
+          "uses": ["everyday_wear", "fashion", "work_wear", "retail", "casual_business", "youth_fashion"]
+        }
+      },
+      "formal": {
+        "suits": {
+          "regions": ["Italy", "China", "United States", "Turkey", "India", "Vietnam", "Romania", "Bulgaria", "Mexico", "Thailand"],
+          "manufacturers": ["Hugo Boss", "Ralph Lauren", "Tommy Hilfiger", "Calvin Klein", "Brooks Brothers", "Zegna", "Canali", "Brioni", "Hickey Freeman", "Hart Schaffner Marx"],
+          "uses": ["business", "formal_events", "weddings", "professional_wear", "retail", "custom_tailoring"]
+        },
+        "dresses": {
+          "regions": ["China", "Vietnam", "Italy", "India", "Turkey", "Romania", "Bulgaria", "Mexico", "Thailand", "Indonesia"],
+          "manufacturers": ["Zara", "H&M", "Ralph Lauren", "Calvin Klein", "Tommy Hilfiger", "Michael Kors", "Kate Spade", "Diane von Furstenberg", "Tory Burch", "Rebecca Taylor"],
+          "uses": ["formal_events", "business", "fashion", "weddings", "retail", "special_occasions"]
+        }
+      },
+      "footwear": {
+        "sneakers": {
+          "regions": ["China", "Vietnam", "Indonesia", "India", "Thailand", "Cambodia", "Philippines", "Mexico", "Brazil", "Ethiopia"],
+          "manufacturers": ["Nike", "Adidas", "Puma", "New Balance", "Under Armour", "Reebok", "Converse", "Vans", "Skechers", "Fila"],
+          "uses": ["sports", "casual_wear", "fashion", "athletic", "lifestyle", "retail"]
+        },
+        "formal_shoes": {
+          "regions": ["Italy", "China", "India", "Vietnam", "Mexico", "Thailand", "Indonesia", "Brazil", "Turkey", "Romania"],
+          "manufacturers": ["Allen Edmonds", "Cole Haan", "Johnston & Murphy", "Florsheim", "Rockport", "Ecco", "Clarks", "Alden", "Meermin", "Crockett & Jones"],
+          "uses": ["business", "formal_events", "weddings", "professional_wear", "retail", "custom_made"]
+        }
+      }
+    },
+    "beauty": {
+      "skincare": {
+        "regions": ["France", "United States", "South Korea", "Japan", "Germany", "Switzerland", "United Kingdom", "Italy", "Spain", "Australia"],
+        "manufacturers": ["L'Oréal", "Estée Lauder", "Procter & Gamble", "Shiseido", "Amorepacific", "Unilever", "Johnson & Johnson", "Beiersdorf", "Coty", "LVMH"],
+        "uses": ["personal_care", "beauty", "anti_aging", "medical", "spa", "retail"]
+      },
+      "makeup": {
+        "regions": ["France", "United States", "Italy", "Japan", "South Korea", "Germany", "United Kingdom", "Spain", "Australia", "Canada"],
+        "manufacturers": ["L'Oréal", "Estée Lauder", "LVMH", "Shiseido", "Amorepacific", "Coty", "Revlon", "Chanel", "Dior", "MAC"],
+        "uses": ["beauty", "cosmetics", "professional", "theatrical", "special_effects", "retail"]
+      }
+    },
+    "toys": {
+      "electronic": {
+        "regions": ["China", "Vietnam", "Mexico", "Thailand", "Malaysia", "Indonesia", "India", "Brazil", "Turkey", "Poland"],
+        "manufacturers": ["Hasbro", "Mattel", "LEGO", "Spin Master", "Bandai", "Takara Tomy", "MGA Entertainment", "Jakks Pacific", "VTech", "Playmobil"],
+        "uses": ["entertainment", "education", "interactive_play", "collectibles", "gaming", "retail"]
+      },
+      "traditional": {
+        "regions": ["China", "Vietnam", "Thailand", "India", "Indonesia", "Malaysia", "Mexico", "Brazil", "Turkey", "Poland"],
+        "manufacturers": ["Hasbro", "Mattel", "LEGO", "Spin Master", "Bandai", "Takara Tomy", "MGA Entertainment", "Jakks Pacific", "VTech", "Playmobil"],
+        "uses": ["entertainment", "education", "creative_play", "collectibles", "gaming", "retail"]
+      }
+    }
+  }
+} 
