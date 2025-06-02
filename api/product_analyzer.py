@@ -55,52 +55,121 @@ def print_material_structure(materials_db: Dict) -> None:
         print(f"  Sample Regions: {', '.join(material['regions'][:3])}...")
     print("=" * 50)
 
-def analyze_product(product_name: str) -> Dict:
+def analyze_product(product_name: str, location: Optional[str] = None) -> Dict:
     """
-    Analyze a product and return its raw materials and their sources.
-    
-    Args:
-        product_name (str): Name of the product to analyze
-        
-    Returns:
-        Dict: Dictionary containing the analysis results
+    Given a product and (optionally) a location, run the three-step GPT pipeline:
+    1. Get likely locations
+    2. Get materials
+    3. Get material source locations (deduplicated)
+    Return a combined result dictionary.
     """
-    # Load the materials database
+    # Load data
     materials_db = load_materials_database()
-    
-    # Create a more concise prompt
-    prompt = f"""
-    Analyze the product "{product_name}" and list ONLY the raw materials it contains.
-    Focus on basic materials like metals, plastics, glass, etc.
-    
-    Format the response as a JSON object with this structure:
-    {{
-        "product": "{product_name}",
-        "raw_materials": ["material1", "material2", ...]
-    }}
+    flattened = flatten_materials_db(materials_db)
+    valid_materials = sorted({m['name'] for m in flattened})
+    material_regions = {m['name']: m['regions'] for m in flattened}
+    # Load valid locations from locations.json
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    locations_path = os.path.join(script_dir, "locations.json")
+    with open(locations_path, "r") as f:
+        locations_data = json.load(f)
+    valid_locations = locations_data['countries'] + locations_data['us_cities'] + list(locations_data['city_to_country'].keys())
+
+    # Step 1: Product + Location -> 3 likely locations
+    likely_locations = gpt_product_to_locations(product_name, location, valid_locations)
+    # Step 2: Product -> materials
+    materials = gpt_product_to_materials(product_name, valid_materials)
+    # Step 3: Materials + locations -> deduped material source locations
+    material_source_locations = gpt_materials_and_locations_to_sources(materials, likely_locations, material_regions)
+
+    return {
+        "product": product_name,
+        "input_location": location,
+        "likely_locations": likely_locations,
+        "raw_materials": materials,
+        "material_source_locations": material_source_locations
+    }
+
+def gpt_product_to_locations(product_name: str, location: Optional[str], valid_locations: List[str]) -> List[str]:
     """
-    
-    try:
-        # Call ChatGPT API
-        response = client.chat.completions.create(
-            model="gpt-4",  # Using GPT-4 for better analysis
-            messages=[
-                {"role": "system", "content": "You are a supply chain analysis expert. Your task is to identify raw materials in products."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.3  # Lower temperature for more consistent results
-        )
-        
-        # Extract and parse the response
-        analysis = json.loads(response.choices[0].message.content)
-        return analysis
-        
-    except Exception as e:
-        return {
-            "error": f"Failed to analyze product: {str(e)}",
-            "product": product_name,
-            "raw_materials": []
-        }
+    Given a product and a location, return the 3 most likely locations (from valid_locations) where the product could have been manufactured or sourced.
+    """
+    system_prompt = (
+        f"You are a supply chain analysis expert. "
+        f"Only use locations from this list: {valid_locations}. "
+        f"Do not invent new locations."
+    )
+    user_prompt = (
+        f"Given the product '{product_name}' and the location '{location}', "
+        f"return the 3 most likely locations where this product could have been manufactured or sourced, as a JSON array."
+    )
+    print("\n==== SYSTEM PROMPT (gpt_product_to_locations) ====")
+    print(system_prompt)
+    print("\n==== USER PROMPT (gpt_product_to_locations) ====")
+    print(user_prompt)
+    response = client.chat.completions.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ],
+        temperature=0.3
+    )
+    return json.loads(response.choices[0].message.content)
+
+def gpt_product_to_materials(product_name: str, valid_materials: List[str]) -> List[str]:
+    """
+    Given a product, return the most relevant raw materials (from valid_materials).
+    """
+    system_prompt = (
+        f"You are a supply chain analysis expert. "
+        f"Only use materials from this list: {valid_materials}. "
+        f"Do not invent new materials."
+    )
+    user_prompt = (
+        f"Given the product '{product_name}', return the most relevant raw materials for this product as a JSON array."
+    )
+    print("\n==== SYSTEM PROMPT (gpt_product_to_materials) ====")
+    print(system_prompt)
+    print("\n==== USER PROMPT (gpt_product_to_materials) ====")
+    print(user_prompt)
+    response = client.chat.completions.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ],
+        temperature=0.3
+    )
+    return json.loads(response.choices[0].message.content)
+
+def gpt_materials_and_locations_to_sources(materials: List[str], locations_of_interest: List[str], material_regions: Dict[str, List[str]]) -> List[str]:
+    """
+    Given a list of materials and 3 locations of interest, return up to 3 likely source locations for these materials, deduplicated.
+    """
+    relevant_material_regions = {m: material_regions[m] for m in materials if m in material_regions}
+    system_prompt = (
+        f"You are a supply chain analysis expert. "
+        f"Only use locations from this list: {locations_of_interest}. "
+        f"Do not invent new locations."
+    )
+    user_prompt = (
+        f"Given the materials {materials} and the regions where each is sourced: {json.dumps(relevant_material_regions)}, "
+        f"return up to 3 likely source locations for these materials, prioritizing overlaps and deduplicating locations. Respond ONLY with a JSON array of up to 3 location names."
+    )
+    print("\n==== SYSTEM PROMPT (gpt_materials_and_locations_to_sources) ====")
+    print(system_prompt)
+    print("\n==== USER PROMPT (gpt_materials_and_locations_to_sources) ====")
+    print(user_prompt)
+    response = client.chat.completions.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ],
+        temperature=0.3
+    )
+    return json.loads(response.choices[0].message.content)
 
 def main():
     """Example usage of the product analyzer"""
@@ -126,8 +195,8 @@ def main():
     ]
     
     for product in test_products:
-        print(f"\nAnalyzing {product}...")
-        result = analyze_product(product)
+        print(f"\nAnalyzing {product} (location: New York)...")
+        result = analyze_product(product, location="New York")
         print(json.dumps(result, indent=2))
 
 if __name__ == "__main__":
