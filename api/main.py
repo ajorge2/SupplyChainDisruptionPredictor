@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
@@ -8,7 +8,7 @@ from datetime import datetime
 from kafka import KafkaConsumer
 from fastapi import WebSocket
 import asyncio
-from product_analyzer import analyze_product
+from .product_analyzer import analyze_product
 
 app = FastAPI()
 
@@ -38,15 +38,6 @@ def read_root():
 def health_check():
     return {"status": "healthy"}
 
-# Product analysis endpoint
-@app.post("/analyze-product")
-def analyze_product_endpoint(request: ProductAnalysisRequest):
-    try:
-        result = analyze_product(request.product_name)
-        return result
-    except Exception as e:
-        logging.error(f"Product analysis error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Product analysis error: {str(e)}")
 @app.websocket("/ws/realtime")
 async def realtime_websocket(websocket: WebSocket):
     print("WebSocket endpoint hit")
@@ -98,3 +89,10 @@ async def realtime_websocket(websocket: WebSocket):
         print("WebSocket connection closed")
         await websocket.close()
 
+@app.post("/analyze")
+async def analyze(request: Request):
+    data = await request.json()
+    product = data.get("product")
+    location = data.get("location")
+    result = analyze_product(product, location)
+    return result

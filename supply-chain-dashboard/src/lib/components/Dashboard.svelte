@@ -42,6 +42,11 @@
   let selectedCategory = Object.keys(products)[0];
   let selectedLocationType = Object.keys(locations)[0];
   let riskData = {};
+  let product = "";
+  let location = "";
+  let result = null;
+  let loading = false;
+  let error = "";
 
   function handleProductSelect(product) {
     selectedProduct = product;
@@ -50,6 +55,24 @@
   function handleLocationSelect(location) {
     selectedLocation = location;
   }
+
+  async function search() {
+    loading = true;
+    error = "";
+    result = null;
+    try {
+      const res = await fetch("http://localhost:8000/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ product, location })
+      });
+      if (!res.ok) throw new Error("API error");
+      result = await res.json();
+    } catch (e) {
+      error = e.message;
+    }
+    loading = false;
+  }
 </script>
 
 <div class="dashboard">
@@ -57,6 +80,20 @@
     <h1>Supply Chain Risk Dashboard</h1>
     <p class="status-message">⚠️ Using placeholder data - API integration pending</p>
   </header>
+
+  <form on:submit|preventDefault={search} class="search-form">
+    <input placeholder="Product" bind:value={product} required />
+    <input placeholder="Location" bind:value={location} required />
+    <button type="submit" disabled={loading}>Analyze</button>
+  </form>
+
+  {#if loading}
+    <p>Loading...</p>
+  {:else if error}
+    <p style="color: red">{error}</p>
+  {:else if result}
+    <pre>{JSON.stringify(result, null, 2)}</pre>
+  {/if}
 
   <main>
     <aside class="selection-panel">
@@ -202,24 +239,29 @@
     flex-wrap: wrap;
   }
 
-  .category-btn {
-    padding: 0.5rem 1rem;
+  .category-btn,
+  .item-btn {
+    color: #222;
     background: white;
     border: 1px solid #dee2e6;
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.9rem;
     transition: all 0.2s ease;
+    padding: 0.5rem 1rem;
   }
 
-  .category-btn:hover {
+  .category-btn.selected,
+  .item-btn.selected {
     background: #e9ecef;
+    color: #222;
+    border-color: #007bff;
   }
 
-  .category-btn.selected {
-    background: #007bff;
-    color: white;
-    border-color: #007bff;
+  .category-btn:hover,
+  .item-btn:hover {
+    background: #d0d7de;
+    color: #222;
   }
 
   .item-list {
@@ -241,7 +283,6 @@
     transition: all 0.2s ease;
     text-align: left;
     font-size: 1rem;
-    color: inherit;
   }
 
   .item-btn:hover {
@@ -249,8 +290,9 @@
   }
 
   .item-btn.selected {
-    background: #007bff;
-    color: white;
+    background: #e9ecef;
+    color: #222;
+    border-color: #007bff;
   }
 
   .risk-panel {
@@ -302,5 +344,35 @@
     font-size: 1.1rem;
     text-align: center;
     margin-top: 2rem;
+  }
+
+  .search-form {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .search-form input {
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .search-form button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+
+  /* Add this for better <pre> readability */
+  pre {
+    color: #222;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    overflow-x: auto;
+    margin-top: 1rem;
+    max-width: 700px;
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 </style> 
