@@ -4,9 +4,9 @@ import json
 import time
 import logging
 from kafka import KafkaProducer
-import newsapi
 from time import sleep
 from datetime import datetime, timedelta
+from material_location_extractor import create_material_location_map, find_material_location_mentions
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -19,7 +19,21 @@ KAFKA_TOPIC = os.getenv("NEWS_TOPIC", "news_data")  # Where to send the data
 KAFKA_SERVER = os.getenv("KAFKA_SERVER", "kafka:9092")
 FETCH_INTERVAL = int(os.getenv("NEWS_FETCH_INTERVAL", 3600))  # Default to 1 hour
 
-logger.info("Environment variables loaded successfully.")
+# Load materials data
+def load_materials_data():
+    try:
+        with open('/app/products.json', 'r') as f:
+            data = json.load(f)
+        return data  # Return the whole object
+    except Exception as e:
+        logger.error(f"Error loading materials data: {e}")
+        return {}
+
+# Initialize materials data
+materials_data = load_materials_data()
+material_locations = create_material_location_map(materials_data)
+
+logger.info(f"Loaded {len(material_locations)} materials with their locations")
 
 # Initialize Kafka producer at module level
 logger.info("Initializing Kafka producer...")
@@ -124,16 +138,30 @@ def main():
                     logger.info(f"Processing {len(articles)} articles...")
                     for article in articles:
                         if article["url"] not in seen_articles:
-                            data = {
-                                "source": "news",
-                                "title": article["title"],
-                                "description": article.get("description", ""),
-                                "url": article["url"],
-                                "published_at": article["publishedAt"]
-                            }
-                            producer.send(KAFKA_TOPIC, data)
+                            # Combine title and description for text analysis
+                            article_text = f"{article['title']} {article.get('description', '')}"
+                            
+                            # Find material and location mentions
+                            mentions = find_material_location_mentions(article_text, material_locations)
+                            
+                            if mentions:
+                                logger.info(f"Found {len(mentions)} material/location mentions in article")
+                                for material, location in mentions:
+                                    data = {
+                                        "source": "news",
+                                        "title": article["title"],
+                                        "description": article.get("description", ""),
+                                        "url": article["url"],
+                                        "published_at": article["publishedAt"],
+                                        "material": material,
+                                        "location": location
+                                    }
+                                    producer.send(KAFKA_TOPIC, data)
+                                    logger.info(f"Sent to Kafka: {material or 'N/A'} - {location or 'N/A'}")
+                            else:
+                                logger.info("No material/location mentions found in article")
+                            
                             seen_articles.add(article["url"])
-                            logger.info(f"Sent to Kafka: {data['title'][:100]}...")
                 else:
                     logger.warning(f"No new articles found for query: '{NEWS_SEARCH_QUERY}'")
                     

@@ -4,6 +4,7 @@ import time
 import praw
 import logging
 from kafka import KafkaProducer
+from material_location_extractor import create_material_location_map, find_material_location_mentions
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -23,6 +24,21 @@ KAFKA_SERVER = os.getenv("KAFKA_SERVER", "kafka:9092")
 FETCH_INTERVAL = int(os.getenv("REDDIT_FETCH_INTERVAL", 300))  # Default: 5 minutes
 
 logger.info("Environment variables loaded successfully.")
+
+# Load materials data
+def load_materials_data():
+    try:
+        with open('/app/products.json', 'r') as f:
+            data = json.load(f)
+        return data  # Return the whole object
+    except Exception as e:
+        logger.error(f"Error loading materials data: {e}")
+        return {}
+
+# Initialize materials data
+materials_data = load_materials_data()
+material_locations = create_material_location_map(materials_data)
+logger.info(f"Loaded {len(material_locations)} materials with their locations")
 
 def main():
     """Fetch Reddit posts and send them to Kafka."""
@@ -52,16 +68,25 @@ def main():
                     subreddit = reddit.subreddit(subreddit_name)
                     for submission in subreddit.new(limit=10):
                         if submission.id not in seen_posts:
-                            data = {
-                                "subreddit": subreddit_name,
-                                "title": submission.title,
-                                "created_utc": submission.created_utc,
-                                "url": submission.url,
-                                "content": submission.selftext
-                            }
-                            producer.send(KAFKA_TOPIC, data)
-                            seen_posts.add(submission.id)
-                            logger.info(f"Sent post to Kafka: {data}")
+                            post_text = f"{submission.title} {submission.selftext}"
+                            mentions = find_material_location_mentions(post_text, material_locations)
+                            if mentions:
+                                logger.info(f"Found {len(mentions)} material/location mentions in post")
+                                for material, location in mentions:
+                                    data = {
+                                        "subreddit": subreddit_name,
+                                        "title": submission.title,
+                                        "created_utc": submission.created_utc,
+                                        "url": submission.url,
+                                        "content": submission.selftext,
+                                        "material": material,
+                                        "location": location
+                                    }
+                                    producer.send(KAFKA_TOPIC, data)
+                                    logger.info(f"Sent post to Kafka: {material or 'N/A'} - {location or 'N/A'}")
+                                seen_posts.add(submission.id)
+                            else:
+                                logger.info("No material/location mentions found in post")
                 except Exception as e:
                     logger.error(f"Error fetching posts from {subreddit_name}: {e}")
             logger.info(f"Sleeping for {FETCH_INTERVAL} seconds before next fetch.")

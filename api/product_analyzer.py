@@ -60,7 +60,7 @@ def analyze_product(product_name: str, location: Optional[str] = None) -> Dict:
     Given a product and (optionally) a location, run the three-step GPT pipeline:
     1. Get likely locations
     2. Get materials
-    3. Get material source locations (deduplicated)
+    3. Get material source locations (mapping)
     Return a combined result dictionary.
     """
     # Load data
@@ -79,7 +79,10 @@ def analyze_product(product_name: str, location: Optional[str] = None) -> Dict:
     likely_locations = gpt_product_to_locations(product_name, location, valid_locations)
     # Step 2: Product -> materials
     materials = gpt_product_to_materials(product_name, valid_materials)
-    # Step 3: Materials + locations -> deduped material source locations
+    # Ensure materials is a list of strings (material names)
+    if materials and isinstance(materials[0], dict):
+        materials = [m['name'] for m in materials]
+    # Step 3: Materials + locations -> mapping of material to up to 3 source locations
     material_source_locations = gpt_materials_and_locations_to_sources(materials, likely_locations, material_regions)
 
     return {
@@ -143,9 +146,9 @@ def gpt_product_to_materials(product_name: str, valid_materials: List[str]) -> L
     )
     return json.loads(response.choices[0].message.content)
 
-def gpt_materials_and_locations_to_sources(materials: List[str], locations_of_interest: List[str], material_regions: Dict[str, List[str]]) -> List[str]:
+def gpt_materials_and_locations_to_sources(materials: List[str], locations_of_interest: List[str], material_regions: Dict[str, List[str]]) -> Dict[str, List[str]]:
     """
-    Given a list of materials and 3 locations of interest, return up to 3 likely source locations for these materials, deduplicated.
+    Given a list of materials and 3 locations of interest, return up to 3 likely source locations for each material as a mapping.
     """
     relevant_material_regions = {m: material_regions[m] for m in materials if m in material_regions}
     system_prompt = (
@@ -155,7 +158,8 @@ def gpt_materials_and_locations_to_sources(materials: List[str], locations_of_in
     )
     user_prompt = (
         f"Given the materials {materials} and the regions where each is sourced: {json.dumps(relevant_material_regions)}, "
-        f"return up to 3 likely source locations for these materials, prioritizing overlaps and deduplicating locations. Respond ONLY with a JSON array of up to 3 location names."
+        f"return a JSON object mapping each material to an array of up to 3 likely source locations for that material. Example format: {{'material1': ['loc1', 'loc2', 'loc3'], ...}}. "
+        f"Each value must be an array of strings. Respond ONLY with the JSON object, and do not include any explanation or extra text."
     )
     print("\n==== SYSTEM PROMPT (gpt_materials_and_locations_to_sources) ====")
     print(system_prompt)

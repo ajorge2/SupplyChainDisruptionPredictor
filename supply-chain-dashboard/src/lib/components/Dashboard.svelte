@@ -47,6 +47,7 @@
   let result = null;
   let loading = false;
   let error = "";
+  let materialRiskScores = {};
 
   function handleProductSelect(product) {
     selectedProduct = product;
@@ -60,6 +61,7 @@
     loading = true;
     error = "";
     result = null;
+    materialRiskScores = {};
     try {
       const res = await fetch("http://localhost:8000/analyze", {
         method: "POST",
@@ -68,6 +70,19 @@
       });
       if (!res.ok) throw new Error("API error");
       result = await res.json();
+
+      // Fetch risk scores for each material
+      if (result && result.raw_materials && location) {
+        for (const material of result.raw_materials) {
+          const riskRes = await fetch(`http://localhost:8000/risk_score?material=${encodeURIComponent(material)}&location=${encodeURIComponent(location)}`);
+          if (riskRes.ok) {
+            const riskData = await riskRes.json();
+            materialRiskScores[material] = riskData.risk_score;
+          } else {
+            materialRiskScores[material] = null;
+          }
+        }
+      }
     } catch (e) {
       error = e.message;
     }
@@ -76,110 +91,144 @@
 </script>
 
 <div class="dashboard">
-  <header>
-    <h1>Supply Chain Risk Dashboard</h1>
-    <p class="status-message">⚠️ Using placeholder data - API integration pending</p>
-  </header>
-
-  <form on:submit|preventDefault={search} class="search-form">
-    <input placeholder="Product" bind:value={product} required />
-    <input placeholder="Location" bind:value={location} required />
-    <button type="submit" disabled={loading}>Analyze</button>
-  </form>
-
-  {#if loading}
-    <p>Loading...</p>
-  {:else if error}
-    <p style="color: red">{error}</p>
-  {:else if result}
-    <pre>{JSON.stringify(result, null, 2)}</pre>
-  {/if}
-
   <main>
-    <aside class="selection-panel">
-      <div class="product-section">
-        <h2>Products</h2>
-        <div class="category-selector">
-          {#each Object.keys(products) as category}
-            <button 
-              class="category-btn"
-              class:selected={selectedCategory === category}
-              on:click={() => selectedCategory = category}
-            >
-              {category}
-            </button>
-          {/each}
-        </div>
-        <ul class="item-list">
-          {#each products[selectedCategory] as product}
-            <button 
-              class="item-btn"
-              class:selected={selectedProduct?.id === product.id}
-              on:click={() => handleProductSelect(product)}
-            >
-              {product.name}
-            </button>
-          {/each}
-        </ul>
-      </div>
+    <header>
+      <h1>Supply Chain Risk Dashboard</h1>
+      <p class="status-message">⚠️ Using placeholder data - API integration pending</p>
+    </header>
 
-      <div class="location-section">
-        <h2>Locations</h2>
-        <div class="category-selector">
-          {#each Object.keys(locations) as type}
-            <button 
-              class="category-btn"
-              class:selected={selectedLocationType === type}
-              on:click={() => selectedLocationType = type}
-            >
-              {type}
-            </button>
-          {/each}
-        </div>
-        <ul class="item-list">
-          {#each locations[selectedLocationType] as location}
-            <button 
-              class="item-btn"
-              class:selected={selectedLocation === location}
-              on:click={() => handleLocationSelect(location)}
-            >
-              {location}
-            </button>
-          {/each}
-        </ul>
-      </div>
-    </aside>
+    <form on:submit|preventDefault={search} class="search-form">
+      <input placeholder="Product" bind:value={product} required />
+      <input placeholder="Location" bind:value={location} required />
+      <button type="submit" disabled={loading}>Analyze</button>
+    </form>
 
-    <section class="risk-panel">
-      {#if selectedProduct && selectedLocation}
-        <h2>Risk Analysis: {selectedProduct.name} in {selectedLocation}</h2>
-        <div class="risk-metrics">
-          <div class="metric-card">
-            <h3>Weather Risks</h3>
-            <p class="placeholder">0</p>
+    <div class="main-content">
+      <aside class="selection-panel">
+        <div class="product-section">
+          <h2>Products</h2>
+          <div class="category-selector">
+            {#each Object.keys(products) as category}
+              <button 
+                class="category-btn"
+                class:selected={selectedCategory === category}
+                on:click={() => selectedCategory = category}
+              >
+                {category}
+              </button>
+            {/each}
           </div>
-          <div class="metric-card">
-            <h3>News Risks</h3>
-            <p class="placeholder">0</p>
-          </div>
-          <div class="metric-card">
-            <h3>Social Media Risks</h3>
-            <p class="placeholder">0</p>
-          </div>
+          <ul class="item-list">
+            {#each products[selectedCategory] as product}
+              <button 
+                class="item-btn"
+                class:selected={selectedProduct?.id === product.id}
+                on:click={() => handleProductSelect(product)}
+              >
+                {product.name}
+              </button>
+            {/each}
+          </ul>
         </div>
-      {:else}
-        <p class="select-prompt">Select both a product and location to view risk analysis</p>
-      {/if}
-    </section>
+
+        <div class="location-section">
+          <h2>Locations</h2>
+          <div class="category-selector">
+            {#each Object.keys(locations) as type}
+              <button 
+                class="category-btn"
+                class:selected={selectedLocationType === type}
+                on:click={() => selectedLocationType = type}
+              >
+                {type}
+              </button>
+            {/each}
+          </div>
+          <ul class="item-list">
+            {#each locations[selectedLocationType] as location}
+              <button 
+                class="item-btn"
+                class:selected={selectedLocation === location}
+                on:click={() => handleLocationSelect(location)}
+              >
+                {location}
+              </button>
+            {/each}
+          </ul>
+        </div>
+      </aside>
+
+      <section class="risk-panel">
+        {#if loading}
+          <p>Loading...</p>
+        {:else if error}
+          <p style="color: red">{error}</p>
+        {:else if result}
+          <div class="cards">
+            {#each result.raw_materials as material}
+              {#if result.material_source_locations[material]}
+                {#each result.material_source_locations[material] as loc}
+                  <div class="card">
+                    <h3>{material}</h3>
+                    <p>Source: {loc}</p>
+                    <p>Risk Score: {materialRiskScores[material] ?? 'N/A'}</p>
+                  </div>
+                {/each}
+              {/if}
+            {/each}
+          </div>
+        {:else if selectedProduct && selectedLocation}
+          <h2>Risk Analysis: {selectedProduct.name} in {selectedLocation}</h2>
+          <div class="risk-metrics">
+            <div class="metric-card">
+              <h3>Weather Risks</h3>
+              <p class="placeholder">{result.risk_score || 0}</p>
+            </div>
+            <div class="metric-card">
+              <h3>News Risks</h3>
+              <p class="placeholder">{result.risk_score || 0}</p>
+            </div>
+            <div class="metric-card">
+              <h3>Social Media Risks</h3>
+              <p class="placeholder">{result.risk_score || 0}</p>
+            </div>
+          </div>
+        {:else}
+          <p class="select-prompt">Select both a product and location to view risk analysis</p>
+        {/if}
+      </section>
+    </div>
   </main>
 </div>
 
 <style>
   .dashboard {
-    padding: 2rem;
-    max-width: 1400px;
-    margin: 0 auto;
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    background: #f0f2f5;
     font-family: system-ui, -apple-system, sans-serif;
+  }
+
+  main {
+    width: 100%;
+    max-width: 1100px;
+    margin: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .main-content {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
   }
 
   header {
@@ -200,16 +249,6 @@
     border-radius: 4px;
     margin-top: 1rem;
     font-size: 0.9rem;
-  }
-
-  main {
-    display: grid;
-    grid-template-columns: 400px 1fr;
-    gap: 2rem;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
   }
 
   .selection-panel {
@@ -296,7 +335,12 @@
   }
 
   .risk-panel {
-    padding: 1.5rem;
+    width: 100%;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
   }
 
   .risk-panel h2 {
@@ -362,17 +406,29 @@
     font-size: 1rem;
   }
 
-  /* Add this for better <pre> readability */
-  pre {
-    color: #222;
-    background: #f8f9fa;
-    padding: 1rem;
-    border-radius: 6px;
-    font-size: 1rem;
-    overflow-x: auto;
+  .cards {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
     margin-top: 1rem;
-    max-width: 700px;
-    white-space: pre-wrap;
-    word-break: break-word;
+  }
+  .card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    padding: 1rem 1.5rem;
+    min-width: 180px;
+    max-width: 220px;
+  }
+  .card h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    color: #222;
+  }
+  .card p {
+    margin: 0;
+    color: #555;
   }
 </style> 

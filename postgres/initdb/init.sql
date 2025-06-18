@@ -1,32 +1,27 @@
--- Create weather_historical table
-CREATE TABLE IF NOT EXISTS weather_historical (
+-- Create risk_scores table
+CREATE TABLE IF NOT EXISTS risk_scores (
     id SERIAL PRIMARY KEY,
-    temperature FLOAT NOT NULL,
-    humidity FLOAT NOT NULL,
-    location VARCHAR(100) NOT NULL,
-    timestamp TIMESTAMP WITHOUT TIME ZONE NOT NULL UNIQUE
-);
-
--- Create predictions table
-CREATE TABLE IF NOT EXISTS predictions (
-    id SERIAL PRIMARY KEY,
+    material VARCHAR(100),
+    location VARCHAR(100),
     timestamp TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
-    location VARCHAR(100) NOT NULL,
-    temperature FLOAT NOT NULL,
-    humidity FLOAT NOT NULL,
-    avg_temperature_last_5_days FLOAT NOT NULL,
-    avg_humidity_last_5_days FLOAT NOT NULL,
-    disruption_probability FLOAT NOT NULL,
-    disruption BOOLEAN NOT NULL DEFAULT FALSE
+    UNIQUE(material, location, timestamp)
 );
 
--- Insert Sample Data
-INSERT INTO predictions (location, temperature, humidity, avg_temperature_last_5_days, avg_humidity_last_5_days, disruption_probability, disruption)
-VALUES
-('Warehouse_A', 25.5, 60, 24.8, 58, 0.2, TRUE),
-('Warehouse_B', 30.2, 55, 29.5, 54, 0.1, FALSE);
+-- Create mentions table for storing material/location mentions from various sources
+CREATE TABLE IF NOT EXISTS mentions (
+    id SERIAL PRIMARY KEY,
+    source VARCHAR(50) NOT NULL,  -- 'news', 'social_media', 'weather'
+    material VARCHAR(100),
+    location VARCHAR(100),
+    content TEXT,  -- The actual text content where the mention was found
+    url TEXT,      -- URL of the source (if applicable)
+    published_at TIMESTAMP WITHOUT TIME ZONE,
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+    metadata JSONB  -- Additional source-specific metadata
+);
 
--- Insert Sample Data
-INSERT INTO weather_historical (temperature, humidity, location, timestamp) VALUES
-(25.5, 60, 'Warehouse_A', '2025-01-01 12:00:00'),
-(30.2, 55, 'Warehouse_B', '2025-01-02 12:00:00');
+-- Create indexes for common queries
+CREATE INDEX IF NOT EXISTS idx_mentions_source ON mentions(source);
+CREATE INDEX IF NOT EXISTS idx_mentions_material ON mentions(material);
+CREATE INDEX IF NOT EXISTS idx_mentions_location ON mentions(location);
+CREATE INDEX IF NOT EXISTS idx_mentions_published_at ON mentions(published_at);
