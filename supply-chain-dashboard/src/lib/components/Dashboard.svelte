@@ -1,46 +1,12 @@
 <script>
-  // No chart imports needed
+  import { onMount } from 'svelte';
 
-  // Mock data for testing
-  const mockProducts = {
-    "Raw Materials": [
-      { id: 1, name: 'Aluminum' },
-      { id: 2, name: 'Copper' },
-      { id: 3, name: 'Steel' }
-    ],
-    "Semiconductors": [
-      { id: 4, name: 'Silicon Wafers' },
-      { id: 5, name: 'Memory Chips' }
-    ],
-    "Chemicals": [
-      { id: 6, name: 'Industrial Gases' },
-      { id: 7, name: 'Specialty Chemicals' }
-    ]
-  };
-
-  const mockLocations = {
-    "US Cities": [
-      "New York City",
-      "Boston",
-      "Philadelphia",
-      "Miami",
-      "Atlanta"
-    ],
-    "Countries": [
-      "China",
-      "Japan",
-      "Germany",
-      "Mexico",
-      "Canada"
-    ]
-  };
-
-  let products = mockProducts;
-  let locations = mockLocations;
+  let products = {};
+  let locations = {};
   let selectedProduct = null;
   let selectedLocation = null;
-  let selectedCategory = Object.keys(products)[0];
-  let selectedLocationType = Object.keys(locations)[0];
+  let selectedCategory = "";
+  let selectedLocationType = "";
   let riskData = {};
   let product = "";
   let location = "";
@@ -48,6 +14,47 @@
   let loading = false;
   let error = "";
   let materialRiskScores = {};
+  let dataLoaded = false;
+
+  onMount(async () => {
+    try {
+      // Load products from products.json
+      const productsRes = await fetch("http://192.241.150.36:8000/products");
+      if (!productsRes.ok) throw new Error("Failed to load products");
+      const productsData = await productsRes.json();
+      products = {
+        "Raw Materials": Object.keys(productsData.raw_materials).flatMap(category => 
+          Object.keys(productsData.raw_materials[category]).map((name, id) => ({ 
+            id: id + 1, 
+            name 
+          }))
+        ),
+        "Semiconductors": Object.keys(productsData.raw_materials.semiconductors).map((name, id) => ({
+          id: id + 1,
+          name
+        })),
+        "Chemicals": Object.keys(productsData.raw_materials.chemicals).map((name, id) => ({
+          id: id + 1,
+          name
+        }))
+      };
+
+      // Load locations from locations.json
+      const locationsRes = await fetch("http://192.241.150.36:8000/locations");
+      if (!locationsRes.ok) throw new Error("Failed to load locations");
+      const locationsData = await locationsRes.json();
+      locations = {
+        "US Cities": locationsData.us_cities,
+        "Countries": locationsData.countries
+      };
+
+      selectedCategory = Object.keys(products)[0];
+      selectedLocationType = Object.keys(locations)[0];
+      dataLoaded = true;
+    } catch (e) {
+      error = e.message;
+    }
+  });
 
   function handleProductSelect(product) {
     selectedProduct = product;
@@ -63,7 +70,7 @@
     result = null;
     materialRiskScores = {};
     try {
-      const res = await fetch("http://localhost:8000/analyze", {
+      const res = await fetch("http://192.241.150.36:8000/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ product, location })
@@ -75,7 +82,7 @@
       if (result && result.raw_materials && location) {
         for (const material of result.raw_materials) {
           try {
-            const riskRes = await fetch(`http://localhost:8000/risk_score?material=${encodeURIComponent(material)}&location=${encodeURIComponent(location)}`);
+            const riskRes = await fetch(`http://192.241.150.36:8000/risk_score?material=${encodeURIComponent(material)}&location=${encodeURIComponent(location)}`);
             if (riskRes.ok) {
               const riskData = await riskRes.json();
               console.log(`Risk score for ${material} / ${location}:`, riskData);
@@ -103,7 +110,9 @@
   <main>
     <header>
       <h1>Supply Chain Risk Dashboard</h1>
-      <p class="status-message">⚠️ Using placeholder data - API integration pending</p>
+      {#if !dataLoaded}
+        <p class="status-message">Loading data...</p>
+      {/if}
     </header>
 
     <form on:submit|preventDefault={search} class="search-form">
@@ -128,7 +137,7 @@
             {/each}
           </div>
           <ul class="item-list">
-            {#each products[selectedCategory] as product}
+            {#each products[selectedCategory] || [] as product}
               <button 
                 class="item-btn"
                 class:selected={selectedProduct?.id === product.id}
@@ -154,7 +163,7 @@
             {/each}
           </div>
           <ul class="item-list">
-            {#each locations[selectedLocationType] as location}
+            {#each locations[selectedLocationType] || [] as location}
               <button 
                 class="item-btn"
                 class:selected={selectedLocation === location}

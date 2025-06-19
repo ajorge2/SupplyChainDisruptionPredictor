@@ -77,8 +77,6 @@ services:
       - kafka
     env_file:
       - .env
-    volumes:
-      - ./ml/model:/app/model  # Share the model directory with the API container
     networks:
       - supplychain_net
     extra_hosts:
@@ -93,22 +91,6 @@ services:
     depends_on:
       - kafka
       - postgres
-    networks:
-      - supplychain_net
-    restart: always
-
-  ml:
-    build: ./ml
-    container_name: ml
-    depends_on:
-      - postgres
-      - redis
-      - kafka
-    env_file:
-      - .env
-    volumes:
-      - ./ml:/app
-    command: python train_model.py
     networks:
       - supplychain_net
     restart: always
