@@ -42,9 +42,9 @@
 
       // Process metals (which has subcategories)
       Object.entries(productsData.raw_materials.metals).forEach(([category, items]) => {
-        Object.keys(items).forEach((name, id) => {
+        Object.keys(items).forEach((name) => {
           processedProducts["Metals"].push({
-            id: `metal_${id}`,
+            id: `metal_${category}_${name}`,
             name: formatName(name),
             category: formatName(category)
           });
@@ -52,9 +52,9 @@
       });
 
       // Process semiconductors (direct items)
-      Object.keys(productsData.raw_materials.semiconductors).forEach((name, id) => {
+      Object.keys(productsData.raw_materials.semiconductors).forEach((name) => {
         processedProducts["Semiconductors"].push({
-          id: `semi_${id}`,
+          id: `semi_${name}`,
           name: formatName(name),
           category: "Semiconductors"
         });
@@ -62,9 +62,9 @@
 
       // Process chemicals
       Object.entries(productsData.raw_materials.chemicals).forEach(([category, items]) => {
-        Object.keys(items).forEach((name, id) => {
+        Object.keys(items).forEach((name) => {
           processedProducts["Chemicals"].push({
-            id: `chem_${id}`,
+            id: `chem_${category}_${name}`,
             name: formatName(name),
             category: formatName(category)
           });
@@ -73,9 +73,9 @@
 
       // Process agricultural
       Object.entries(productsData.raw_materials.agricultural).forEach(([category, items]) => {
-        Object.keys(items).forEach((name, id) => {
+        Object.keys(items).forEach((name) => {
           processedProducts["Agricultural"].push({
-            id: `agri_${id}`,
+            id: `agri_${category}_${name}`,
             name: formatName(name),
             category: formatName(category)
           });
@@ -84,9 +84,9 @@
 
       // Process minerals
       Object.entries(productsData.raw_materials.minerals).forEach(([category, items]) => {
-        Object.keys(items).forEach((name, id) => {
+        Object.keys(items).forEach((name) => {
           processedProducts["Minerals"].push({
-            id: `mineral_${id}`,
+            id: `mineral_${category}_${name}`,
             name: formatName(name),
             category: formatName(category)
           });
@@ -385,7 +385,7 @@
 
   .category-btn,
   .item-btn {
-    color: #222;
+    color: #333;
     background: white;
     border: 1px solid #dee2e6;
     border-radius: 4px;
@@ -397,15 +397,15 @@
 
   .category-btn.selected,
   .item-btn.selected {
-    background: #e9ecef;
-    color: #222;
-    border-color: #007bff;
+    background: #007bff;
+    color: white;
+    border-color: #0056b3;
   }
 
   .category-btn:hover,
   .item-btn:hover {
-    background: #d0d7de;
-    color: #222;
+    background: #e9ecef;
+    color: #333;
   }
 
   .item-list {
@@ -419,14 +419,11 @@
 
   .item-btn {
     width: 100%;
+    text-align: left;
     padding: 0.75rem 1rem;
     background: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: left;
-    font-size: 1rem;
+    color: #333;
+    border: 1px solid #dee2e6;
   }
 
   .item-btn:hover {
@@ -616,6 +613,7 @@
 
   .product-name {
     font-weight: 500;
+    color: #333;
   }
 
   .product-category {
