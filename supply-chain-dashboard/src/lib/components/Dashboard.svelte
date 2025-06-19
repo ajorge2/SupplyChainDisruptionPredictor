@@ -275,8 +275,8 @@
             <h3>Risk Analysis</h3>
             <div class="risk-details">
               <p class="selection-info">
-                <strong class="selection-label">Product:</strong> <span class="selection-value">{selectedProduct.name}</span><br>
-                <strong class="selection-label">Location:</strong> <span class="selection-value">{selectedLocation}</span>
+                <strong class="selection-label">Product:</strong> <span class="selection-value">{product}</span><br>
+                <strong class="selection-label">Location:</strong> <span class="selection-value">{location}</span>
               </p>
               <div class="risk-score">
                 <span class="score-label">Risk Score</span>
@@ -290,13 +290,13 @@
               </div>
             </div>
           </div>
-        {:else if selectedProduct && selectedLocation}
+        {:else if product && location}
           <div class="risk-card pending">
             <h3>Ready to Analyze</h3>
             <p>Click "Analyze" to calculate risk score for:</p>
             <p class="selection-info">
-              <strong>Product:</strong> {selectedProduct.name}<br>
-              <strong>Location:</strong> {selectedLocation}
+              <strong>Product:</strong> {product}<br>
+              <strong>Location:</strong> {location}
             </p>
           </div>
         {:else}
