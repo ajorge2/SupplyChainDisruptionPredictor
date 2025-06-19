@@ -22,22 +22,78 @@
       const productsRes = await fetch("http://192.241.150.36:8000/products");
       if (!productsRes.ok) throw new Error("Failed to load products");
       const productsData = await productsRes.json();
-      products = {
-        "Raw Materials": Object.keys(productsData.raw_materials).flatMap(category => 
-          Object.keys(productsData.raw_materials[category]).map((name, id) => ({ 
-            id: id + 1, 
-            name 
-          }))
-        ),
-        "Semiconductors": Object.keys(productsData.raw_materials.semiconductors).map((name, id) => ({
-          id: id + 1,
-          name
-        })),
-        "Chemicals": Object.keys(productsData.raw_materials.chemicals).map((name, id) => ({
-          id: id + 1,
-          name
-        }))
+      
+      // Helper function to format names
+      const formatName = (name) => {
+        return name
+          .split('_')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
       };
+
+      // Process products into a more organized structure
+      const processedProducts = {
+        "Metals": [],
+        "Semiconductors": [],
+        "Chemicals": [],
+        "Agricultural": [],
+        "Minerals": []
+      };
+
+      // Process metals (which has subcategories)
+      Object.entries(productsData.raw_materials.metals).forEach(([category, items]) => {
+        Object.keys(items).forEach((name, id) => {
+          processedProducts["Metals"].push({
+            id: `metal_${id}`,
+            name: formatName(name),
+            category: formatName(category)
+          });
+        });
+      });
+
+      // Process semiconductors (direct items)
+      Object.keys(productsData.raw_materials.semiconductors).forEach((name, id) => {
+        processedProducts["Semiconductors"].push({
+          id: `semi_${id}`,
+          name: formatName(name),
+          category: "Semiconductors"
+        });
+      });
+
+      // Process chemicals
+      Object.entries(productsData.raw_materials.chemicals).forEach(([category, items]) => {
+        Object.keys(items).forEach((name, id) => {
+          processedProducts["Chemicals"].push({
+            id: `chem_${id}`,
+            name: formatName(name),
+            category: formatName(category)
+          });
+        });
+      });
+
+      // Process agricultural
+      Object.entries(productsData.raw_materials.agricultural).forEach(([category, items]) => {
+        Object.keys(items).forEach((name, id) => {
+          processedProducts["Agricultural"].push({
+            id: `agri_${id}`,
+            name: formatName(name),
+            category: formatName(category)
+          });
+        });
+      });
+
+      // Process minerals
+      Object.entries(productsData.raw_materials.minerals).forEach(([category, items]) => {
+        Object.keys(items).forEach((name, id) => {
+          processedProducts["Minerals"].push({
+            id: `mineral_${id}`,
+            name: formatName(name),
+            category: formatName(category)
+          });
+        });
+      });
+
+      products = processedProducts;
 
       // Load locations from locations.json
       const locationsRes = await fetch("http://192.241.150.36:8000/locations");
@@ -136,17 +192,24 @@
               </button>
             {/each}
           </div>
-          <ul class="item-list">
-            {#each products[selectedCategory] || [] as product}
-              <button 
-                class="item-btn"
-                class:selected={selectedProduct?.id === product.id}
-                on:click={() => handleProductSelect(product)}
-              >
-                {product.name}
-              </button>
-            {/each}
-          </ul>
+          
+          {#if products[selectedCategory]}
+            <div class="category-group">
+              <h3 class="category-header">{selectedCategory}</h3>
+              <div class="product-list">
+                {#each products[selectedCategory] as product}
+                  <button 
+                    class="product-item"
+                    class:selected={selectedProduct?.id === product.id}
+                    on:click={() => handleProductSelect(product)}
+                  >
+                    <span class="product-name">{product.name}</span>
+                    <span class="product-category">{product.category}</span>
+                  </button>
+                {/each}
+              </div>
+            </div>
+          {/if}
         </div>
 
         <div class="location-section">
@@ -448,5 +511,52 @@
   .card p {
     margin: 0;
     color: #555;
+  }
+
+  .category-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .category-header {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #eee;
+  }
+
+  .product-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .product-item {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem;
+    border-radius: 4px;
+    background: white;
+    border: 1px solid #eee;
+  }
+
+  .product-name {
+    font-weight: 500;
+  }
+
+  .product-category {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.25rem;
+  }
+
+  .product-item:hover {
+    background: #f8f9fa;
+    border-color: #dee2e6;
+  }
+
+  .product-item.selected {
+    background: #e7f5ff;
+    border-color: #74c0fc;
   }
 </style> 
