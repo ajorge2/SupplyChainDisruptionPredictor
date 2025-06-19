@@ -121,44 +121,78 @@ REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
 redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
 
 @router.get("/risk_score")
-def get_risk_score(material: str, location: str):
+def get_risk_score(material: str, locations: list[str] = Query(None)):
     """
-    Calculate risk score for a material/location combo based on recent_mentions in Redis.
+    Calculate risk scores for a material across multiple locations.
+    Returns both individual location scores and an aggregate score.
     """
     try:
-        # RISK SCORE LOGIC (see above)
         material = material.lower()
-        location = location.lower()
+        locations = [loc.lower() for loc in locations]
         recent_mentions = [json.loads(x) for x in redis_client.lrange('recent_mentions', 0, 499)]
-        together = 0
-        material_only = 0
-        location_only = 0
-
-        for mention in recent_mentions:
-            m = mention.get("material")
-            l = mention.get("location")
-            if m:
-                m = m.lower()
-            if l:
-                l = l.lower()
-            if m == material and l == location:
-                together += 1
-            elif m == material:
-                material_only += 1
-            elif l == location:
-                location_only += 1
-
-        # Apply your risk score rules
-        if together > 1 or material_only > 2 or location_only > 3:
-            score = 3
-        elif together == 1 or material_only == 2 or location_only == 3:
-            score = 2
-        elif material_only == 1 or location_only == 2:
-            score = 1
-        else:
-            score = 0
-
-        return {"material": material, "location": location, "risk_score": score}
+        
+        location_scores = {}
+        max_risk = 0  # Track highest risk score for aggregate
+        total_together = 0  # Track total mentions of material+location together
+        material_mentions = 0  # Track total material mentions
+        
+        # Calculate individual scores for each location
+        for location in locations:
+            together = 0
+            material_only = 0
+            location_only = 0
+            
+            for mention in recent_mentions:
+                m = mention.get("material", "").lower() if mention.get("material") else ""
+                l = mention.get("location", "").lower() if mention.get("location") else ""
+                
+                if m == material and l == location:
+                    together += 1
+                    total_together += 1
+                elif m == material:
+                    material_only += 1
+                    material_mentions += 1
+                elif l == location:
+                    location_only += 1
+            
+            # Calculate individual location score
+            if together > 1 or material_only > 2 or location_only > 3:
+                score = 3
+            elif together == 1 or material_only == 2 or location_only == 3:
+                score = 2
+            elif material_only == 1 or location_only == 2:
+                score = 1
+            else:
+                score = 0
+                
+            location_scores[location] = {
+                "risk_score": score,
+                "mentions": {
+                    "together": together,
+                    "material_only": material_only,
+                    "location_only": location_only
+                }
+            }
+            
+            max_risk = max(max_risk, score)
+        
+        # Calculate aggregate score based on:
+        # - Highest individual location score
+        # - Total mentions across all locations
+        # - Total material mentions
+        aggregate_score = max_risk
+        if total_together > len(locations) or material_mentions > len(locations) * 2:
+            aggregate_score = min(3, aggregate_score + 1)  # Increase risk if many mentions across locations
+            
+        return {
+            "material": material,
+            "aggregate_risk_score": aggregate_score,
+            "location_scores": location_scores,
+            "total_mentions": {
+                "material": material_mentions,
+                "together": total_together
+            }
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

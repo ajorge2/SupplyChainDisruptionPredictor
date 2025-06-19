@@ -164,22 +164,22 @@
       analyzedLocation = location;
 
       // Fetch risk scores for each material
-      if (result && result.raw_materials && location) {
+      if (result && result.raw_materials && result.material_source_locations) {
         for (const material of result.raw_materials) {
           try {
-            const riskRes = await fetch(`http://192.241.150.36:8000/risk_score?material=${encodeURIComponent(material)}&location=${encodeURIComponent(location)}`);
-            if (riskRes.ok) {
-              const riskData = await riskRes.json();
-              console.log(`Risk score for ${material} / ${location}:`, riskData);
-              materialRiskScores[material] = riskData.risk_score;
-            } else {
-              // Log the error response
-              const errorText = await riskRes.text();
-              console.error(`Failed to fetch risk score for ${material} / ${location}:`, riskRes.status, errorText);
-              materialRiskScores[material] = null;
+            if (result.material_source_locations[material] && result.material_source_locations[material].length > 0) {
+              const locations = result.material_source_locations[material];
+              const riskRes = await fetch(`http://192.241.150.36:8000/risk_score?${locations.map(loc => `locations=${encodeURIComponent(loc)}`).join('&')}&material=${encodeURIComponent(material)}`);
+              if (riskRes.ok) {
+                const riskData = await riskRes.json();
+                materialRiskScores[material] = riskData;
+              } else {
+                console.error(`Failed to fetch risk score for ${material}:`, riskRes.status);
+                materialRiskScores[material] = null;
+              }
             }
           } catch (err) {
-            console.error(`Network error for ${material} / ${location}:`, err);
+            console.error(`Network error for ${material}:`, err);
             materialRiskScores[material] = null;
           }
         }
@@ -299,17 +299,43 @@
                     <div class="material-item">
                       <div class="material-header">
                         <span class="material-name">{material}</span>
-                        <span class="risk-score-badge" 
-                          class:high-risk={materialRiskScores[material] === 3}
-                          class:medium-risk={materialRiskScores[material] === 2}
-                          class:low-risk={materialRiskScores[material] <= 1}
-                        >
-                          Risk: {materialRiskScores[material] ?? 'N/A'}
-                        </span>
+                        {#if materialRiskScores[material]}
+                          <span class="risk-score-badge" 
+                            class:high-risk={materialRiskScores[material].aggregate_risk_score === 3}
+                            class:medium-risk={materialRiskScores[material].aggregate_risk_score === 2}
+                            class:low-risk={materialRiskScores[material].aggregate_risk_score <= 1}
+                          >
+                            Risk: {materialRiskScores[material].aggregate_risk_score}
+                          </span>
+                        {:else}
+                          <span class="risk-score-badge">Risk: N/A</span>
+                        {/if}
                       </div>
                       {#if result.material_source_locations && result.material_source_locations[material]}
                         <div class="source-locations">
-                          <strong>Common Sources:</strong> {result.material_source_locations[material].join(', ')}
+                          <strong>Source Locations:</strong>
+                          <div class="location-risks">
+                            {#each result.material_source_locations[material] as location}
+                              {#if materialRiskScores[material] && materialRiskScores[material].location_scores[location.toLowerCase()]}
+                                {@const locationScore = materialRiskScores[material].location_scores[location.toLowerCase()]}
+                                <div class="location-risk-item">
+                                  <span class="location-name">{location}</span>
+                                  <span class="location-risk-badge"
+                                    class:high-risk={locationScore.risk_score === 3}
+                                    class:medium-risk={locationScore.risk_score === 2}
+                                    class:low-risk={locationScore.risk_score <= 1}
+                                  >
+                                    Risk: {locationScore.risk_score}
+                                    <div class="risk-tooltip">
+                                      Mentions with location: {locationScore.mentions.together}<br>
+                                      Material mentions: {locationScore.mentions.material_only}<br>
+                                      Location mentions: {locationScore.mentions.location_only}
+                                    </div>
+                                  </span>
+                                </div>
+                              {/if}
+                            {/each}
+                          </div>
                         </div>
                       {/if}
                     </div>
@@ -761,5 +787,68 @@
 
   .source-locations strong {
     color: #333;
+  }
+
+  .location-risks {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding-left: 1rem;
+  }
+
+  .location-risk-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+  }
+
+  .location-name {
+    font-size: 0.9rem;
+    color: #495057;
+  }
+
+  .location-risk-badge {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    position: relative;
+  }
+
+  .risk-tooltip {
+    display: none;
+    position: absolute;
+    background: #333;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    z-index: 10;
+    top: 100%;
+    right: 0;
+    margin-top: 0.25rem;
+  }
+
+  .location-risk-badge:hover .risk-tooltip {
+    display: block;
+  }
+
+  .high-risk {
+    background: #dc3545;
+    color: white;
+  }
+
+  .medium-risk {
+    background: #ffc107;
+    color: #212529;
+  }
+
+  .low-risk {
+    background: #28a745;
+    color: white;
   }
 </style> 
