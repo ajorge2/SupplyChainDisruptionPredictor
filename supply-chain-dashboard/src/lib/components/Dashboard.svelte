@@ -15,6 +15,7 @@
   let error = "";
   let materialRiskScores = {};
   let dataLoaded = false;
+  let rawProduct = "";
 
   onMount(async () => {
     try {
@@ -46,6 +47,7 @@
           processedProducts["Metals"].push({
             id: `metal_${category}_${name}`,
             name: formatName(name),
+            rawName: name,
             category: formatName(category)
           });
         });
@@ -56,6 +58,7 @@
         processedProducts["Semiconductors"].push({
           id: `semi_${name}`,
           name: formatName(name),
+          rawName: name,
           category: "Semiconductors"
         });
       });
@@ -66,6 +69,7 @@
           processedProducts["Chemicals"].push({
             id: `chem_${category}_${name}`,
             name: formatName(name),
+            rawName: name,
             category: formatName(category)
           });
         });
@@ -77,6 +81,7 @@
           processedProducts["Agricultural"].push({
             id: `agri_${category}_${name}`,
             name: formatName(name),
+            rawName: name,
             category: formatName(category)
           });
         });
@@ -88,6 +93,7 @@
           processedProducts["Minerals"].push({
             id: `mineral_${category}_${name}`,
             name: formatName(name),
+            rawName: name,
             category: formatName(category)
           });
         });
@@ -115,7 +121,7 @@
   function handleProductSelect(selectedProd) {
     if (selectedProd) {
       selectedProduct = selectedProd;
-      product = selectedProd.name;
+      product = selectedProd.rawName;
     }
   }
 
@@ -145,7 +151,10 @@
       const res = await fetch("http://192.241.150.36:8000/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ product, location })
+        body: JSON.stringify({ 
+          product: product.toLowerCase(),
+          location: location.toLowerCase()
+        })
       });
       if (!res.ok) throw new Error("API error");
       result = await res.json();
@@ -484,6 +493,7 @@
 
   .selection-value {
     color: #333;
+    font-weight: 500;
   }
 
   .risk-score {
@@ -506,22 +516,23 @@
     font-weight: bold;
     padding: 0.5rem 1rem;
     border-radius: 4px;
+    background: #f8f9fa;
     color: #333;
   }
 
   .high-risk {
-    color: white;
-    background: #dc3545;
+    color: white !important;
+    background: #dc3545 !important;
   }
 
   .medium-risk {
-    color: white;
-    background: #fd7e14;
+    color: white !important;
+    background: #fd7e14 !important;
   }
 
   .low-risk {
-    color: white;
-    background: #28a745;
+    color: white !important;
+    background: #28a745 !important;
   }
 
   .risk-card.loading {
