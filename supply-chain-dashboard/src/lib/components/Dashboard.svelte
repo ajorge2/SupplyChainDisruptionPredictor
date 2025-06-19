@@ -271,8 +271,8 @@
             <h3>Risk Analysis</h3>
             <div class="risk-details">
               <p class="selection-info">
-                <strong>Product:</strong> {selectedProduct.name}<br>
-                <strong>Location:</strong> {selectedLocation}
+                <strong class="selection-label">Product:</strong> <span class="selection-value">{selectedProduct.name}</span><br>
+                <strong class="selection-label">Location:</strong> <span class="selection-value">{selectedLocation}</span>
               </p>
               <div class="risk-score">
                 <span class="score-label">Risk Score</span>
@@ -470,6 +470,16 @@
     text-align: left;
     line-height: 1.6;
     margin: 0;
+    color: #333;
+  }
+
+  .selection-label {
+    color: #666;
+    font-weight: 600;
+  }
+
+  .selection-value {
+    color: #333;
   }
 
   .risk-score {
@@ -477,6 +487,7 @@
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
+    margin-top: 1.5rem;
   }
 
   .score-label {
@@ -491,21 +502,22 @@
     font-weight: bold;
     padding: 0.5rem 1rem;
     border-radius: 4px;
+    color: #333;
   }
 
   .high-risk {
-    color: #dc3545;
-    background: #fdf3f4;
+    color: white;
+    background: #dc3545;
   }
 
   .medium-risk {
-    color: #fd7e14;
-    background: #fff4ec;
+    color: white;
+    background: #fd7e14;
   }
 
   .low-risk {
-    color: #28a745;
-    background: #f0fff4;
+    color: white;
+    background: #28a745;
   }
 
   .risk-card.loading {
