@@ -112,15 +112,27 @@
     }
   });
 
-  function handleProductSelect(product) {
-    selectedProduct = product;
+  function handleProductSelect(selectedProd) {
+    selectedProduct = selectedProd;
+    product = selectedProd.name;
   }
 
-  function handleLocationSelect(location) {
-    selectedLocation = location;
+  function handleLocationSelect(selectedLoc) {
+    selectedLocation = selectedLoc;
+    location = selectedLoc;
+  }
+
+  function handleCategorySelect(category) {
+    selectedCategory = category;
+    selectedProduct = null;
+    product = "";
   }
 
   async function search() {
+    if (!product || !location) {
+      error = "Please select both a product and location";
+      return;
+    }
     loading = true;
     error = "";
     result = null;
@@ -172,9 +184,9 @@
     </header>
 
     <form on:submit|preventDefault={search} class="search-form">
-      <input placeholder="Product" bind:value={product} required />
-      <input placeholder="Location" bind:value={location} required />
-      <button type="submit" disabled={loading}>Analyze</button>
+      <input placeholder="Product" bind:value={product} readonly />
+      <input placeholder="Location" bind:value={location} readonly />
+      <button type="submit" disabled={loading || !product || !location}>Analyze</button>
     </form>
 
     <div class="main-content">
@@ -186,7 +198,7 @@
               <button 
                 class="category-btn"
                 class:selected={selectedCategory === category}
-                on:click={() => selectedCategory = category}
+                on:click={() => handleCategorySelect(category)}
               >
                 {category}
               </button>
@@ -197,14 +209,14 @@
             <div class="category-group">
               <h3 class="category-header">{selectedCategory}</h3>
               <div class="product-list">
-                {#each products[selectedCategory] as product}
+                {#each products[selectedCategory] as prod}
                   <button 
                     class="product-item"
-                    class:selected={selectedProduct?.id === product.id}
-                    on:click={() => handleProductSelect(product)}
+                    class:selected={selectedProduct?.id === prod.id}
+                    on:click={() => handleProductSelect(prod)}
                   >
-                    <span class="product-name">{product.name}</span>
-                    <span class="product-category">{product.category}</span>
+                    <span class="product-name">{prod.name}</span>
+                    <span class="product-category">{prod.category}</span>
                   </button>
                 {/each}
               </div>
@@ -219,63 +231,75 @@
               <button 
                 class="category-btn"
                 class:selected={selectedLocationType === type}
-                on:click={() => selectedLocationType = type}
+                on:click={() => {
+                  selectedLocationType = type;
+                  selectedLocation = null;
+                  location = "";
+                }}
               >
                 {type}
               </button>
             {/each}
           </div>
-          <ul class="item-list">
-            {#each locations[selectedLocationType] || [] as location}
+          <div class="item-list">
+            {#each locations[selectedLocationType] || [] as loc}
               <button 
                 class="item-btn"
-                class:selected={selectedLocation === location}
-                on:click={() => handleLocationSelect(location)}
+                class:selected={selectedLocation === loc}
+                on:click={() => handleLocationSelect(loc)}
               >
-                {location}
+                {loc}
               </button>
             {/each}
-          </ul>
+          </div>
         </div>
       </aside>
 
       <section class="risk-panel">
         {#if loading}
-          <p>Loading...</p>
+          <div class="risk-card loading">
+            <div class="loading-spinner"></div>
+            <p>Analyzing risks...</p>
+          </div>
         {:else if error}
-          <p style="color: red">{error}</p>
+          <div class="risk-card error">
+            <h3>Error</h3>
+            <p>{error}</p>
+          </div>
         {:else if result}
-          <div class="cards">
-            {#each result.raw_materials as material}
-              {#if result.material_source_locations[material]}
-                {#each result.material_source_locations[material] as loc}
-                  <div class="card">
-                    <h3>{material}</h3>
-                    <p>Source: {loc}</p>
-                    <p>Risk Score: {materialRiskScores[material] ?? 'N/A'}</p>
-                  </div>
-                {/each}
-              {/if}
-            {/each}
+          <div class="risk-card">
+            <h3>Risk Analysis</h3>
+            <div class="risk-details">
+              <p class="selection-info">
+                <strong>Product:</strong> {selectedProduct.name}<br>
+                <strong>Location:</strong> {selectedLocation}
+              </p>
+              <div class="risk-score">
+                <span class="score-label">Risk Score</span>
+                <span class="score-value" 
+                  class:high-risk={result.risk_score === 3} 
+                  class:medium-risk={result.risk_score === 2} 
+                  class:low-risk={result.risk_score <= 1}
+                >
+                  {result.risk_score}
+                </span>
+              </div>
+            </div>
           </div>
         {:else if selectedProduct && selectedLocation}
-          <h2>Risk Analysis: {selectedProduct.name} in {selectedLocation}</h2>
-          <div class="risk-metrics">
-            <div class="metric-card">
-              <h3>Weather Risks</h3>
-              <p class="placeholder">{result.risk_score || 0}</p>
-            </div>
-            <div class="metric-card">
-              <h3>News Risks</h3>
-              <p class="placeholder">{result.risk_score || 0}</p>
-            </div>
-            <div class="metric-card">
-              <h3>Social Media Risks</h3>
-              <p class="placeholder">{result.risk_score || 0}</p>
-            </div>
+          <div class="risk-card pending">
+            <h3>Ready to Analyze</h3>
+            <p>Click "Analyze" to calculate risk score for:</p>
+            <p class="selection-info">
+              <strong>Product:</strong> {selectedProduct.name}<br>
+              <strong>Location:</strong> {selectedLocation}
+            </p>
           </div>
         {:else}
-          <p class="select-prompt">Select both a product and location to view risk analysis</p>
+          <div class="risk-card empty">
+            <h3>No Analysis Yet</h3>
+            <p>Select a product and location to analyze supply chain risks</p>
+          </div>
         {/if}
       </section>
     </div>
@@ -416,59 +440,109 @@
   }
 
   .risk-panel {
-    width: 100%;
-    min-height: 400px;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     justify-content: flex-start;
   }
 
-  .risk-panel h2 {
-    color: #1a1a1a;
-    font-size: 1.5rem;
-    margin: 0 0 1.5rem 0;
-  }
-
-  .risk-metrics {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-  }
-
-  .metric-card {
-    background: #f8f9fa;
-    padding: 1rem;
+  .risk-card {
+    background: white;
     border-radius: 8px;
-    transition: transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
   }
 
-  .metric-card:hover {
-    transform: translateY(-2px);
-  }
-
-  .metric-card h3 {
-    color: #1a1a1a;
-    font-size: 1rem;
-    margin: 0 0 0.5rem 0;
-  }
-
-  .metric-card p {
-    color: #6c757d;
-    margin: 0;
+  .risk-card h3 {
+    color: #333;
+    margin: 0 0 1rem 0;
     font-size: 1.25rem;
   }
 
-  .placeholder {
-    color: #6c757d;
-    opacity: 0.7;
+  .risk-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
   }
 
-  .select-prompt {
-    color: #6c757d;
-    font-size: 1.1rem;
-    text-align: center;
-    margin-top: 2rem;
+  .selection-info {
+    text-align: left;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .risk-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .score-label {
+    font-size: 0.9rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .score-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+  }
+
+  .high-risk {
+    color: #dc3545;
+    background: #fdf3f4;
+  }
+
+  .medium-risk {
+    color: #fd7e14;
+    background: #fff4ec;
+  }
+
+  .low-risk {
+    color: #28a745;
+    background: #f0fff4;
+  }
+
+  .risk-card.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .risk-card.error {
+    border-left: 4px solid #dc3545;
+  }
+
+  .risk-card.pending {
+    border: 2px dashed #dee2e6;
+  }
+
+  .risk-card.empty {
+    background: #f8f9fa;
+    border: none;
   }
 
   .search-form {
