@@ -10,6 +10,8 @@
   let riskData = {};
   let product = "";
   let location = "";
+  let analyzedProduct = "";
+  let analyzedLocation = "";
   let result = null;
   let loading = false;
   let error = "";
@@ -158,6 +160,8 @@
       });
       if (!res.ok) throw new Error("API error");
       result = await res.json();
+      analyzedProduct = product;
+      analyzedLocation = location;
 
       // Fetch risk scores for each material
       if (result && result.raw_materials && location) {
@@ -284,8 +288,8 @@
             <h3>Risk Analysis</h3>
             <div class="risk-details">
               <p class="selection-info">
-                <strong class="selection-label">Product:</strong> <span class="selection-value">{product}</span><br>
-                <strong class="selection-label">Location:</strong> <span class="selection-value">{location}</span>
+                <strong class="selection-label">Product:</strong> <span class="selection-value">{analyzedProduct}</span><br>
+                <strong class="selection-label">Location:</strong> <span class="selection-value">{analyzedLocation}</span>
               </p>
               <div class="risk-score">
                 <span class="score-label">Risk Score</span>
@@ -567,6 +571,12 @@
   .risk-card.empty {
     background: #f8f9fa;
     border: none;
+    color: #333;
+  }
+
+  .risk-card.empty h3,
+  .risk-card.empty p {
+    color: #333;
   }
 
   .search-form {
