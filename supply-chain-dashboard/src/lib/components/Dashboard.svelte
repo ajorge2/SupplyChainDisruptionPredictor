@@ -291,16 +291,42 @@
                 <strong class="selection-label">Product:</strong> <span class="selection-value">{analyzedProduct}</span><br>
                 <strong class="selection-label">Location:</strong> <span class="selection-value">{analyzedLocation}</span>
               </p>
-              <div class="risk-score">
-                <span class="score-label">Risk Score</span>
-                <span class="score-value" 
-                  class:high-risk={result.risk_score === 3} 
-                  class:medium-risk={result.risk_score === 2} 
-                  class:low-risk={result.risk_score <= 1}
-                >
-                  {result.risk_score}
-                </span>
-              </div>
+              
+              {#if result.raw_materials && result.raw_materials.length > 0}
+                <div class="materials-list">
+                  <h4>Component Materials:</h4>
+                  {#each result.raw_materials as material}
+                    <div class="material-item">
+                      <div class="material-header">
+                        <span class="material-name">{material}</span>
+                        <span class="risk-score-badge" 
+                          class:high-risk={materialRiskScores[material] === 3}
+                          class:medium-risk={materialRiskScores[material] === 2}
+                          class:low-risk={materialRiskScores[material] <= 1}
+                        >
+                          Risk: {materialRiskScores[material] ?? 'N/A'}
+                        </span>
+                      </div>
+                      {#if result.material_source_locations && result.material_source_locations[material]}
+                        <div class="source-locations">
+                          <strong>Common Sources:</strong> {result.material_source_locations[material].join(', ')}
+                        </div>
+                      {/if}
+                    </div>
+                  {/each}
+                </div>
+              {:else}
+                <div class="risk-score">
+                  <span class="score-label">Risk Score</span>
+                  <span class="score-value" 
+                    class:high-risk={result.risk_score === 3} 
+                    class:medium-risk={result.risk_score === 2} 
+                    class:low-risk={result.risk_score <= 1}
+                  >
+                    {result.risk_score}
+                  </span>
+                </div>
+              {/if}
             </div>
           </div>
         {:else if product && location}
@@ -566,6 +592,12 @@
 
   .risk-card.pending {
     border: 2px dashed #dee2e6;
+    color: #333;
+  }
+
+  .risk-card.pending h3,
+  .risk-card.pending p {
+    color: #333;
   }
 
   .risk-card.empty {
@@ -667,5 +699,67 @@
   .product-item.selected {
     background: #e7f5ff;
     border-color: #74c0fc;
+  }
+
+  .materials-list {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .materials-list h4 {
+    margin: 0;
+    color: #333;
+    font-size: 1.1rem;
+  }
+
+  .material-item {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 1rem;
+  }
+
+  .material-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .material-name {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .risk-score-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: white;
+    background: #6c757d;
+  }
+
+  .risk-score-badge.high-risk {
+    background: #dc3545;
+  }
+
+  .risk-score-badge.medium-risk {
+    background: #fd7e14;
+  }
+
+  .risk-score-badge.low-risk {
+    background: #28a745;
+  }
+
+  .source-locations {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .source-locations strong {
+    color: #333;
   }
 </style> 
