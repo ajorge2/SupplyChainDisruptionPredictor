@@ -62,14 +62,47 @@ async def get_locations():
 @app.post("/analyze")
 async def analyze(request: ProductAnalysisRequest):
     try:
-        result = analyze_product(request.product, request.location)
-        if not result:
-            raise HTTPException(status_code=404, detail="Analysis not found")
-        return {
-            "raw_materials": result.get("raw_materials", []),
-            "material_source_locations": result.get("material_source_locations", {}),
-            "risk_score": result.get("risk_score", 0)
-        }
+        # Load data
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        products_path = os.path.join(script_dir, "products.json")
+        with open(products_path, "r") as f:
+            products_data = json.load(f)
+
+        # Check if this is a direct selection from our database
+        product_info = None
+        for category, items in products_data["raw_materials"].items():
+            if isinstance(items, dict):
+                for subcat, subitems in items.items():
+                    if isinstance(subitems, dict):
+                        if request.product in subitems:
+                            product_info = subitems[request.product]
+                            break
+                    elif request.product == subcat:
+                        product_info = items[subcat]
+                        break
+            if product_info:
+                break
+
+        # If product was found in database, use direct lookup
+        if product_info:
+            return {
+                "raw_materials": [request.product],
+                "material_source_locations": {
+                    request.product: product_info.get("regions", [])[:3]  # Get up to 3 source locations
+                },
+                "risk_score": 0  # This will be calculated by the risk_score endpoint
+            }
+        # If product wasn't found, use OpenAI to analyze it
+        else:
+            result = analyze_product(request.product, request.location)
+            if not result:
+                raise HTTPException(status_code=404, detail="Analysis not found")
+            return {
+                "raw_materials": result.get("raw_materials", []),
+                "material_source_locations": result.get("material_source_locations", {}),
+                "risk_score": 0  # This will be calculated by the risk_score endpoint
+            }
+            
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

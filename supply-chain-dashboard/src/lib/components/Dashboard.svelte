@@ -113,13 +113,17 @@
   });
 
   function handleProductSelect(selectedProd) {
-    selectedProduct = selectedProd;
-    product = selectedProd.name;
+    if (selectedProd) {
+      selectedProduct = selectedProd;
+      product = selectedProd.name;
+    }
   }
 
   function handleLocationSelect(selectedLoc) {
-    selectedLocation = selectedLoc;
-    location = selectedLoc;
+    if (selectedLoc) {
+      selectedLocation = selectedLoc;
+      location = selectedLoc;
+    }
   }
 
   function handleCategorySelect(category) {
@@ -184,8 +188,8 @@
     </header>
 
     <form on:submit|preventDefault={search} class="search-form">
-      <input placeholder="Product" bind:value={product} readonly />
-      <input placeholder="Location" bind:value={location} readonly />
+      <input placeholder="Product" bind:value={product} />
+      <input placeholder="Location" bind:value={location} />
       <button type="submit" disabled={loading || !product || !location}>Analyze</button>
     </form>
 
