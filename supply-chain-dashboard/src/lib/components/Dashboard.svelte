@@ -74,11 +74,20 @@
       // Fetch risk scores for each material
       if (result && result.raw_materials && location) {
         for (const material of result.raw_materials) {
-          const riskRes = await fetch(`http://localhost:8000/risk_score?material=${encodeURIComponent(material)}&location=${encodeURIComponent(location)}`);
-          if (riskRes.ok) {
-            const riskData = await riskRes.json();
-            materialRiskScores[material] = riskData.risk_score;
-          } else {
+          try {
+            const riskRes = await fetch(`http://localhost:8000/risk_score?material=${encodeURIComponent(material)}&location=${encodeURIComponent(location)}`);
+            if (riskRes.ok) {
+              const riskData = await riskRes.json();
+              console.log(`Risk score for ${material} / ${location}:`, riskData);
+              materialRiskScores[material] = riskData.risk_score;
+            } else {
+              // Log the error response
+              const errorText = await riskRes.text();
+              console.error(`Failed to fetch risk score for ${material} / ${location}:`, riskRes.status, errorText);
+              materialRiskScores[material] = null;
+            }
+          } catch (err) {
+            console.error(`Network error for ${material} / ${location}:`, err);
             materialRiskScores[material] = null;
           }
         }
