@@ -130,66 +130,66 @@ def get_risk_score(material: str, locations: list[str] = Query(None)):
         material = material.lower()
         locations = [loc.lower() for loc in locations]
         recent_mentions = [json.loads(x) for x in redis_client.lrange('recent_mentions', 0, 499)]
+
+        # Initialize counts for all locations of interest
+        location_mentions = {loc: {"together": 0, "location_only": 0} for loc in locations}
+        material_only_mentions = 0
         
+        # Single pass through all mentions to gather counts
+        for mention in recent_mentions:
+            m = mention.get("material", "").lower() if mention.get("material") else ""
+            l = mention.get("location", "").lower() if mention.get("location") else ""
+
+            is_material_match = (m == material)
+            is_location_match = (l in locations)
+
+            if is_material_match and is_location_match:
+                location_mentions[l]["together"] += 1
+            elif is_material_match:
+                material_only_mentions += 1
+            elif is_location_match:
+                location_mentions[l]["location_only"] += 1
+
         location_scores = {}
-        max_risk = 0  # Track highest risk score for aggregate
-        total_together = 0  # Track total mentions of material+location together
-        material_mentions = 0  # Track total material mentions
+        max_risk = 0
         
-        # Calculate individual scores for each location
-        for location in locations:
-            together = 0
-            material_only = 0
-            location_only = 0
+        # Calculate scores based on the gathered counts
+        for loc, counts in location_mentions.items():
+            together = counts["together"]
+            location_only = counts["location_only"]
             
-            for mention in recent_mentions:
-                m = mention.get("material", "").lower() if mention.get("material") else ""
-                l = mention.get("location", "").lower() if mention.get("location") else ""
-                
-                if m == material and l == location:
-                    together += 1
-                    total_together += 1
-                elif m == material:
-                    material_only += 1
-                    material_mentions += 1
-                elif l == location:
-                    location_only += 1
-            
-            # Calculate individual location score
-            if together > 1 or material_only > 2 or location_only > 3:
+            # Risk score logic based on your documentation
+            if together > 1 or material_only_mentions > 2 or location_only > 3:
                 score = 3
-            elif together == 1 or material_only == 2 or location_only == 3:
+            elif together == 1 or material_only_mentions == 2 or location_only == 3:
                 score = 2
-            elif material_only == 1 or location_only == 2:
+            elif material_only_mentions == 1 or location_only == 2:
                 score = 1
             else:
                 score = 0
-                
-            location_scores[location] = {
+            
+            location_scores[loc] = {
                 "risk_score": score,
                 "mentions": {
                     "together": together,
-                    "material_only": material_only,
+                    "material_only": material_only_mentions, # Use the total count
                     "location_only": location_only
                 }
             }
-            
             max_risk = max(max_risk, score)
-        
-        # Calculate aggregate score based on:
-        # - Highest individual location score
-        # - Total mentions across all locations
-        # - Total material mentions
+
+        # Calculate aggregate score
+        total_together = sum(counts["together"] for counts in location_mentions.values())
         aggregate_score = max_risk
-        if total_together > len(locations) or material_mentions > len(locations) * 2:
-            aggregate_score = min(3, aggregate_score + 1)  # Increase risk if many mentions across locations
+        if total_together > len(locations) or material_only_mentions > len(locations) * 2:
+            aggregate_score = min(3, aggregate_score + 1)
             
         return {
             "material": material,
             "aggregate_risk_score": aggregate_score,
             "location_scores": location_scores,
             "total_mentions": {
-                "material": material_mentions,
+                "material": material_only_mentions,
                 "together": total_together
             }
         }
