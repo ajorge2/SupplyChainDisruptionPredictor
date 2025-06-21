@@ -132,23 +132,31 @@ def get_risk_score(material: str, locations: list[str] = Query(None)):
         recent_mentions = [json.loads(x) for x in redis_client.lrange('recent_mentions', 0, 499)]
 
         # Initialize counts for all locations of interest
-        location_mentions = {loc: {"together": 0, "location_only": 0} for loc in locations}
+        location_mentions = {
+            loc: {"together": 0, "location_only": 0, "sources_together": [], "sources_location_only": []} 
+            for loc in locations
+        }
         material_only_mentions = 0
+        sources_material_only = []
         
-        # Single pass through all mentions to gather counts
+        # Single pass through all mentions to gather counts and sources
         for mention in recent_mentions:
             m = mention.get("material", "").lower() if mention.get("material") else ""
             l = mention.get("location", "").lower() if mention.get("location") else ""
+            url = mention.get("url")
 
             is_material_match = (m == material)
             is_location_match = (l in locations)
 
             if is_material_match and is_location_match:
                 location_mentions[l]["together"] += 1
+                if url: location_mentions[l]["sources_together"].append(url)
             elif is_material_match:
                 material_only_mentions += 1
+                if url: sources_material_only.append(url)
             elif is_location_match:
                 location_mentions[l]["location_only"] += 1
+                if url: location_mentions[l]["sources_location_only"].append(url)
 
         location_scores = {}
         max_risk = 0
@@ -172,8 +180,13 @@ def get_risk_score(material: str, locations: list[str] = Query(None)):
                 "risk_score": score,
                 "mentions": {
                     "together": together,
-                    "material_only": material_only_mentions, # Use the total count
+                    "material_only": material_only_mentions,
                     "location_only": location_only
+                },
+                "sources": {
+                    "together": counts["sources_together"],
+                    "material_only": sources_material_only,
+                    "location_only": counts["sources_location_only"]
                 }
             }
             max_risk = max(max_risk, score)

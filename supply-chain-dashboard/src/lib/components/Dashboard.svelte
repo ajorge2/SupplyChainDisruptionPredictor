@@ -19,6 +19,7 @@
   let dataLoaded = false;
   let rawProduct = "";
   let showProjectInfo = true;
+  let modalData = null;
 
   onMount(async () => {
     try {
@@ -190,6 +191,28 @@
     }
     loading = false;
   }
+
+  function showSourcesModal(material, scoreData) {
+    if (scoreData && scoreData.location_scores) {
+      const allSources = [];
+      Object.values(scoreData.location_scores).forEach(locScore => {
+        if (locScore.sources) {
+          allSources.push(...locScore.sources.together);
+          allSources.push(...locScore.sources.material_only);
+          allSources.push(...locScore.sources.location_only);
+        }
+      });
+      // Use a Set to get unique URLs
+      modalData = {
+        material,
+        sources: [...new Set(allSources)].filter(Boolean) // Filter out null/empty URLs
+      };
+    }
+  }
+
+  function closeModal() {
+    modalData = null;
+  }
 </script>
 
 <div class="dashboard">
@@ -305,47 +328,41 @@
                   <h4>Component Materials:</h4>
                   {#each result.raw_materials as material}
                     <div class="material-item">
-                      <div class="material-header">
+                      <div class="material-details">
                         <span class="material-name">{material}</span>
                         {#if materialRiskScores[material]}
-                          <span class="risk-score-badge" 
-                            class:high-risk={materialRiskScores[material].aggregate_risk_score === 3}
-                            class:medium-risk={materialRiskScores[material].aggregate_risk_score === 2}
-                            class:low-risk={materialRiskScores[material].aggregate_risk_score <= 1}
-                          >
-                            Risk: {materialRiskScores[material].aggregate_risk_score}
-                          </span>
+                          <div class="risk-score-container">
+                            <span 
+                              class="risk-score-value"
+                              class:risk-0={materialRiskScores[material].aggregate_risk_score === 0}
+                              class:risk-1={materialRiskScores[material].aggregate_risk_score === 1}
+                              class:risk-2={materialRiskScores[material].aggregate_risk_score === 2}
+                              class:risk-3={materialRiskScores[material].aggregate_risk_score === 3}
+                            >
+                              {materialRiskScores[material].aggregate_risk_score}
+                            </span>
+                            <div class="tooltip">
+                              <p><strong>Aggregate Risk: {materialRiskScores[material].aggregate_risk_score}</strong></p>
+                              <hr>
+                              {#each Object.entries(materialRiskScores[material].location_scores) as [loc, score]}
+                                <p><strong>{loc.charAt(0).toUpperCase() + loc.slice(1)}:</strong> Risk {score.risk_score}</p>
+                                <ul>
+                                  <li>Together: {score.mentions.together}</li>
+                                  <li>Material Only: {score.mentions.material_only}</li>
+                                  <li>Location Only: {score.mentions.location_only}</li>
+                                </ul>
+                              {/each}
+                            </div>
+                          </div>
+                          {#if materialRiskScores[material].aggregate_risk_score > 0}
+                            <button class="view-sources-btn" on:click={() => showSourcesModal(material, materialRiskScores[material])}>
+                              Sources
+                            </button>
+                          {/if}
                         {:else}
-                          <span class="risk-score-badge">Risk: N/A</span>
+                          <span class="risk-score-value">N/A</span>
                         {/if}
                       </div>
-                      {#if result.material_source_locations && result.material_source_locations[material]}
-                        <div class="source-locations">
-                          <strong>Source Locations:</strong>
-                          <div class="location-risks">
-                            {#each result.material_source_locations[material] as location}
-                              {#if materialRiskScores[material] && materialRiskScores[material].location_scores[location.toLowerCase()]}
-                                {@const locationScore = materialRiskScores[material].location_scores[location.toLowerCase()]}
-                                <div class="location-risk-item">
-                                  <span class="location-name">{location}</span>
-                                  <span class="location-risk-badge"
-                                    class:high-risk={locationScore.risk_score === 3}
-                                    class:medium-risk={locationScore.risk_score === 2}
-                                    class:low-risk={locationScore.risk_score <= 1}
-                                  >
-                                    Risk: {locationScore.risk_score}
-                                    <div class="risk-tooltip">
-                                      Mentions with location: {locationScore.mentions.together}<br>
-                                      Material mentions: {locationScore.mentions.material_only}<br>
-                                      Location mentions: {locationScore.mentions.location_only}
-                                    </div>
-                                  </span>
-                                </div>
-                              {/if}
-                            {/each}
-                          </div>
-                        </div>
-                      {/if}
                     </div>
                   {/each}
                 </div>
@@ -546,6 +563,26 @@
     </div>
   </main>
 </div>
+
+{#if modalData}
+  <div class="modal-backdrop" on:click={closeModal}>
+    <div class="modal-content" on:click|stopPropagation>
+      <button class="close-modal-btn" on:click={closeModal}>&times;</button>
+      <h3>Sources for {modalData.material}</h3>
+      {#if modalData.sources.length > 0}
+        <ul class="source-link-list">
+          {#each modalData.sources as sourceUrl}
+            <li>
+              <a href={sourceUrl} target="_blank" rel="noopener noreferrer">{sourceUrl}</a>
+            </li>
+          {/each}
+        </ul>
+      {:else}
+        <p>No specific sources found for this risk level.</p>
+      {/if}
+    </div>
+  </div>
+{/if}
 
 <style>
   .dashboard {
@@ -968,115 +1005,188 @@
   }
 
   .material-item {
-    background: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 6px;
-    padding: 1rem;
-  }
-
-  .material-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
+    padding: 1rem;
+    border-bottom: 1px solid #ecf0f1;
+  }
+
+  .material-item:last-child {
+    border-bottom: none;
+  }
+
+  .material-details {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
 
   .material-name {
     font-weight: 600;
-    color: #333;
+    color: #34495e;
   }
 
-  .risk-score-badge {
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-weight: 500;
-    font-size: 0.9rem;
-    color: white;
-    background: #6c757d;
-  }
-
-  .risk-score-badge.high-risk {
-    background: #dc3545;
-  }
-
-  .risk-score-badge.medium-risk {
-    background: #fd7e14;
-  }
-
-  .risk-score-badge.low-risk {
-    background: #28a745;
-  }
-
-  .source-locations {
-    font-size: 0.9rem;
-    color: #666;
-  }
-
-  .source-locations strong {
-    color: #333;
-  }
-
-  .location-risks {
+  .risk-score-container {
+    position: relative;
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-    padding-left: 1rem;
-  }
-
-  .location-risk-item {
-    display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 0.25rem 0.5rem;
-    background: #f8f9fa;
-    border-radius: 4px;
   }
 
-  .location-name {
+  .risk-score-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 5px 15px;
+    border-radius: 20px;
+    min-width: 30px;
+    text-align: center;
+    color: white;
+    transition: transform 0.2s;
+  }
+
+  .risk-score-container:hover .risk-score-value {
+    transform: scale(1.1);
+  }
+
+  .risk-0 { background-color: #2ecc71; }
+  .risk-1 { background-color: #f1c40f; color: #333; }
+  .risk-2 { background-color: #e67e22; }
+  .risk-3 { background-color: #e74c3c; }
+
+  .tooltip {
+    visibility: hidden;
+    width: 240px;
+    background-color: #333;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 10px;
+    position: absolute;
+    z-index: 10;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -120px;
+    opacity: 0;
+    transition: opacity 0.3s;
     font-size: 0.9rem;
-    color: #495057;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   }
 
-  .location-risk-badge {
+  .tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+  }
+
+  .risk-score-container:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .tooltip p {
+    margin: 0 0 5px 0;
+  }
+  .tooltip hr {
+    border: none;
+    border-top: 1px solid #555;
+    margin: 5px 0;
+  }
+  .tooltip ul {
+    margin: 5px 0 0 0;
+    padding-left: 20px;
+  }
+  .tooltip li {
+    margin-bottom: 3px;
+  }
+
+  .view-sources-btn {
+    background-color: #ecf0f1;
+    color: #34495e;
+    border: 1px solid #bdc3c7;
+    padding: 6px 12px;
+    border-radius: 15px;
     font-size: 0.8rem;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .view-sources-btn:hover {
+    background-color: #e0e6e8;
+    border-color: #95a5a6;
+    transform: translateY(-1px);
+  }
+
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
     position: relative;
   }
 
-  .risk-tooltip {
-    display: none;
+  .close-modal-btn {
     position: absolute;
-    background: #333;
-    color: white;
-    padding: 0.5rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    white-space: nowrap;
-    z-index: 10;
-    top: 100%;
-    right: 0;
-    margin-top: 0.25rem;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #888;
   }
 
-  .location-risk-badge:hover .risk-tooltip {
+  .modal-content h3 {
+    margin-top: 0;
+    color: #2c3e50;
+  }
+
+  .source-link-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 1rem;
+  }
+
+  .source-link-list li {
+    margin-bottom: 0.5rem;
+  }
+
+  .source-link-list a {
+    color: #3498db;
+    text-decoration: none;
+    word-break: break-all;
+    background-color: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 6px;
     display: block;
+    transition: background-color 0.2s;
   }
 
-  .high-risk {
-    background: #dc3545;
-    color: white;
-  }
-
-  .medium-risk {
-    background: #ffc107;
-    color: #212529;
-  }
-
-  .low-risk {
-    background: #28a745;
-    color: white;
+  .source-link-list a:hover {
+    background-color: #e9ecef;
+    text-decoration: underline;
   }
 
   /* Project Description Section Styles */
