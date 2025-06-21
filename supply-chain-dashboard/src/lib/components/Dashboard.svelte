@@ -196,147 +196,13 @@
   <main>
     <header>
       <h1>Supply Chain Risk Dashboard</h1>
+      <button class="details-btn" on:click={() => document.getElementById('project-details').scrollIntoView({ behavior: 'smooth' })}>
+        📋 See Project Details
+      </button>
       {#if !dataLoaded}
         <p class="status-message">Loading data...</p>
       {/if}
     </header>
-
-    <!-- Project Description Section -->
-    {#if showProjectInfo}
-      <div class="project-info-section">
-        <div class="project-header">
-          <h2>🚀 Advanced Supply Chain Disruption Prediction System</h2>
-          <button class="toggle-btn" on:click={() => showProjectInfo = !showProjectInfo}>
-            {showProjectInfo ? 'Hide Details' : 'Show Details'}
-          </button>
-        </div>
-        
-        <div class="project-description">
-          <div class="tech-stack">
-            <h3>🛠️ Technical Architecture</h3>
-            <div class="tech-grid">
-              <div class="tech-card">
-                <h4>Backend Infrastructure</h4>
-                <ul>
-                  <li><strong>FastAPI</strong> - High-performance REST API with automatic OpenAPI documentation</li>
-                  <li><strong>PostgreSQL</strong> - Relational database with complex supply chain data modeling</li>
-                  <li><strong>Apache Kafka</strong> - Real-time event streaming for data ingestion</li>
-                  <li><strong>Docker & Docker Compose</strong> - Containerized microservices architecture</li>
-                </ul>
-              </div>
-              
-              <div class="tech-card">
-                <h4>Machine Learning Pipeline</h4>
-                <ul>
-                  <li><strong>Scikit-learn</strong> - Ensemble models for risk prediction</li>
-                  <li><strong>Real-time Model Training</strong> - Continuous learning from new data</li>
-                  <li><strong>Feature Engineering</strong> - Multi-dimensional risk factor analysis</li>
-                  <li><strong>Model Versioning</strong> - Automated model deployment and rollback</li>
-                </ul>
-              </div>
-              
-              <div class="tech-card">
-                <h4>Data Ingestion & Processing</h4>
-                <ul>
-                  <li><strong>Multi-source Integration</strong> - News APIs, social media, weather data</li>
-                  <li><strong>Real-time Streaming</strong> - Kafka consumers for live data processing</li>
-                  <li><strong>Data Validation</strong> - Schema enforcement and quality checks</li>
-                  <li><strong>ETL Pipelines</strong> - Automated data transformation and enrichment</li>
-                </ul>
-              </div>
-              
-              <div class="tech-card">
-                <h4>Frontend & UX</h4>
-                <ul>
-                  <li><strong>Svelte.js</strong> - Modern reactive frontend framework</li>
-                  <li><strong>Real-time Updates</strong> - Live risk score calculations</li>
-                  <li><strong>Interactive Visualizations</strong> - Dynamic risk assessment display</li>
-                  <li><strong>Responsive Design</strong> - Cross-platform compatibility</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          
-          <div class="system-features">
-            <h3>🎯 Core System Capabilities</h3>
-            <div class="features-grid">
-              <div class="feature-item">
-                <span class="feature-icon">📊</span>
-                <div>
-                  <h4>Multi-dimensional Risk Analysis</h4>
-                  <p>Analyzes supply chain risks across geopolitical, environmental, economic, and social factors using advanced ML algorithms</p>
-                </div>
-              </div>
-              
-              <div class="feature-item">
-                <span class="feature-icon">🌍</span>
-                <div>
-                  <h4>Global Supply Chain Mapping</h4>
-                  <p>Maps complex supply chain networks with material sourcing locations, transportation routes, and dependency analysis</p>
-                </div>
-              </div>
-              
-              <div class="feature-item">
-                <span class="feature-icon">⚡</span>
-                <div>
-                  <h4>Real-time Risk Monitoring</h4>
-                  <p>Continuously monitors global events and automatically updates risk scores based on emerging threats and disruptions</p>
-                </div>
-              </div>
-              
-              <div class="feature-item">
-                <span class="feature-icon">🤖</span>
-                <div>
-                  <h4>Intelligent Alert System</h4>
-                  <p>Proactive notification system that identifies potential disruptions before they impact supply chains</p>
-                </div>
-              </div>
-              
-              <div class="feature-item">
-                <span class="feature-icon">📈</span>
-                <div>
-                  <h4>Predictive Analytics</h4>
-                  <p>Uses historical data and machine learning to predict future supply chain disruptions with high accuracy</p>
-                </div>
-              </div>
-              
-              <div class="feature-item">
-                <span class="feature-icon">🔧</span>
-                <div>
-                  <h4>Scalable Architecture</h4>
-                  <p>Microservices-based design supporting high-throughput data processing and concurrent user access</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="complexity-highlights">
-            <h3>💡 Technical Complexity Highlights</h3>
-            <div class="complexity-grid">
-              <div class="complexity-card">
-                <h4>Advanced Data Processing</h4>
-                <p>Processes millions of data points from multiple sources including news articles, social media posts, weather reports, and economic indicators. Implements sophisticated NLP techniques for sentiment analysis and event extraction.</p>
-              </div>
-              
-              <div class="complexity-card">
-                <h4>Machine Learning Pipeline</h4>
-                <p>Implements ensemble learning models that combine multiple algorithms for robust risk prediction. Features include automated feature selection, hyperparameter optimization, and continuous model retraining based on new data.</p>
-              </div>
-              
-              <div class="complexity-card">
-                <h4>Real-time Event Streaming</h4>
-                <p>Built on Apache Kafka for handling high-volume, real-time data streams. Implements complex event processing patterns to detect supply chain disruption signals from multiple concurrent data sources.</p>
-              </div>
-              
-              <div class="complexity-card">
-                <h4>Complex Supply Chain Modeling</h4>
-                <p>Models intricate supply chain networks with multiple tiers, dependencies, and alternative sourcing options. Implements graph algorithms for dependency analysis and bottleneck identification.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    {/if}
 
     <form on:submit|preventDefault={search} class="search-form">
       <input placeholder="Product" bind:value={product} />
@@ -510,6 +376,141 @@
         {/if}
       </section>
     </div>
+
+    <!-- Project Description Section at Bottom -->
+    <div id="project-details" class="project-info-section">
+      <div class="project-header">
+        <h2>🚀 Advanced Supply Chain Disruption Prediction System</h2>
+        <button class="back-to-top-btn" on:click={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          ↑ Back to Top
+        </button>
+      </div>
+      
+      <div class="project-description">
+        <div class="tech-stack">
+          <h3>🛠️ Technical Architecture</h3>
+          <div class="tech-grid">
+            <div class="tech-card">
+              <h4>Backend Infrastructure</h4>
+              <ul>
+                <li><strong>FastAPI</strong> - High-performance REST API with automatic OpenAPI documentation</li>
+                <li><strong>PostgreSQL</strong> - Relational database with complex supply chain data modeling</li>
+                <li><strong>Apache Kafka</strong> - Real-time event streaming for data ingestion</li>
+                <li><strong>Docker & Docker Compose</strong> - Containerized microservices architecture</li>
+              </ul>
+            </div>
+            
+            <div class="tech-card">
+              <h4>Machine Learning Pipeline</h4>
+              <ul>
+                <li><strong>Scikit-learn</strong> - Ensemble models for risk prediction</li>
+                <li><strong>Real-time Model Training</strong> - Continuous learning from new data</li>
+                <li><strong>Feature Engineering</strong> - Multi-dimensional risk factor analysis</li>
+                <li><strong>Model Versioning</strong> - Automated model deployment and rollback</li>
+              </ul>
+            </div>
+            
+            <div class="tech-card">
+              <h4>Data Ingestion & Processing</h4>
+              <ul>
+                <li><strong>Multi-source Integration</strong> - News APIs, social media, weather data</li>
+                <li><strong>Real-time Streaming</strong> - Kafka consumers for live data processing</li>
+                <li><strong>Data Validation</strong> - Schema enforcement and quality checks</li>
+                <li><strong>ETL Pipelines</strong> - Automated data transformation and enrichment</li>
+              </ul>
+            </div>
+            
+            <div class="tech-card">
+              <h4>Frontend & UX</h4>
+              <ul>
+                <li><strong>Svelte.js</strong> - Modern reactive frontend framework</li>
+                <li><strong>Real-time Updates</strong> - Live risk score calculations</li>
+                <li><strong>Interactive Visualizations</strong> - Dynamic risk assessment display</li>
+                <li><strong>Responsive Design</strong> - Cross-platform compatibility</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <div class="system-features">
+          <h3>🎯 Core System Capabilities</h3>
+          <div class="features-grid">
+            <div class="feature-item">
+              <span class="feature-icon">📊</span>
+              <div>
+                <h4>Multi-dimensional Risk Analysis</h4>
+                <p>Analyzes supply chain risks across geopolitical, environmental, economic, and social factors using advanced ML algorithms</p>
+              </div>
+            </div>
+            
+            <div class="feature-item">
+              <span class="feature-icon">🌍</span>
+              <div>
+                <h4>Global Supply Chain Mapping</h4>
+                <p>Maps complex supply chain networks with material sourcing locations, transportation routes, and dependency analysis</p>
+              </div>
+            </div>
+            
+            <div class="feature-item">
+              <span class="feature-icon">⚡</span>
+              <div>
+                <h4>Real-time Risk Monitoring</h4>
+                <p>Continuously monitors global events and automatically updates risk scores based on emerging threats and disruptions</p>
+              </div>
+            </div>
+            
+            <div class="feature-item">
+              <span class="feature-icon">🤖</span>
+              <div>
+                <h4>Intelligent Alert System</h4>
+                <p>Proactive notification system that identifies potential disruptions before they impact supply chains</p>
+              </div>
+            </div>
+            
+            <div class="feature-item">
+              <span class="feature-icon">📈</span>
+              <div>
+                <h4>Predictive Analytics</h4>
+                <p>Uses historical data and machine learning to predict future supply chain disruptions with high accuracy</p>
+              </div>
+            </div>
+            
+            <div class="feature-item">
+              <span class="feature-icon">🔧</span>
+              <div>
+                <h4>Scalable Architecture</h4>
+                <p>Microservices-based design supporting high-throughput data processing and concurrent user access</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="complexity-highlights">
+          <h3>💡 Technical Complexity Highlights</h3>
+          <div class="complexity-grid">
+            <div class="complexity-card">
+              <h4>Advanced Data Processing</h4>
+              <p>Processes millions of data points from multiple sources including news articles, social media posts, weather reports, and economic indicators. Implements sophisticated NLP techniques for sentiment analysis and event extraction.</p>
+            </div>
+            
+            <div class="complexity-card">
+              <h4>Machine Learning Pipeline</h4>
+              <p>Implements ensemble learning models that combine multiple algorithms for robust risk prediction. Features include automated feature selection, hyperparameter optimization, and continuous model retraining based on new data.</p>
+            </div>
+            
+            <div class="complexity-card">
+              <h4>Real-time Event Streaming</h4>
+              <p>Built on Apache Kafka for handling high-volume, real-time data streams. Implements complex event processing patterns to detect supply chain disruption signals from multiple concurrent data sources.</p>
+            </div>
+            
+            <div class="complexity-card">
+              <h4>Complex Supply Chain Modeling</h4>
+              <p>Models intricate supply chain networks with multiple tiers, dependencies, and alternative sourcing options. Implements graph algorithms for dependency analysis and bottleneck identification.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 </div>
 
@@ -544,13 +545,58 @@
   }
 
   header {
+    text-align: center;
     margin-bottom: 2rem;
+    padding: 2rem 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
   }
 
-  h1 {
-    color: #1a1a1a;
-    font-size: 2rem;
+  header h1 {
     margin: 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .details-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+
+  .details-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .back-to-top-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .back-to-top-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
   }
 
   .status-message {
