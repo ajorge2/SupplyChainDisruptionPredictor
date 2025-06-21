@@ -196,6 +196,10 @@
   <main>
     <header>
       <h1>Supply Chain Risk Dashboard</h1>
+      <p class="instruction-text">
+        Enter any consumer product (like "iPhone", "Tesla Model 3", or "Nike shoes") and a location to analyze supply chain disruption risks. 
+        Our AI system breaks down the product into its component raw materials and evaluates mentions in news and social media to provide a risk score (0-3) with detailed breakdown of materials and their source locations.
+      </p>
       <button class="details-btn" on:click={() => document.getElementById('project-details').scrollIntoView({ behavior: 'smooth' })}>
         📋 See Project Details
       </button>
@@ -401,12 +405,12 @@
             </div>
             
             <div class="tech-card">
-              <h4>Machine Learning Pipeline</h4>
+              <h4>Data Processing & Analytics</h4>
               <ul>
-                <li><strong>Scikit-learn</strong> - Ensemble models for risk prediction</li>
-                <li><strong>Real-time Model Training</strong> - Continuous learning from new data</li>
-                <li><strong>Feature Engineering</strong> - Multi-dimensional risk factor analysis</li>
-                <li><strong>Model Versioning</strong> - Automated model deployment and rollback</li>
+                <li><strong>OpenAI API Integration</strong> - AI-powered product breakdown and material identification</li>
+                <li><strong>Real-time Data Processing</strong> - Continuous analysis of incoming data streams</li>
+                <li><strong>Risk Assessment Algorithms</strong> - Multi-factor risk scoring and evaluation</li>
+                <li><strong>Data Pipeline Management</strong> - Automated data transformation and enrichment</li>
               </ul>
             </div>
             
@@ -436,10 +440,18 @@
           <h3>🎯 Core System Capabilities</h3>
           <div class="features-grid">
             <div class="feature-item">
+              <span class="feature-icon">🤖</span>
+              <div>
+                <h4>AI-Powered Product Analysis</h4>
+                <p>Uses OpenAI API to intelligently break down any consumer product into its component raw materials and supply chain dependencies</p>
+              </div>
+            </div>
+            
+            <div class="feature-item">
               <span class="feature-icon">📊</span>
               <div>
                 <h4>Multi-dimensional Risk Analysis</h4>
-                <p>Analyzes supply chain risks across geopolitical, environmental, economic, and social factors using advanced ML algorithms</p>
+                <p>Analyzes supply chain risks across geopolitical, environmental, economic, and social factors using advanced algorithms</p>
               </div>
             </div>
             
@@ -460,18 +472,10 @@
             </div>
             
             <div class="feature-item">
-              <span class="feature-icon">🤖</span>
+              <span class="feature-icon">🔍</span>
               <div>
-                <h4>Intelligent Alert System</h4>
-                <p>Proactive notification system that identifies potential disruptions before they impact supply chains</p>
-              </div>
-            </div>
-            
-            <div class="feature-item">
-              <span class="feature-icon">📈</span>
-              <div>
-                <h4>Predictive Analytics</h4>
-                <p>Uses historical data and machine learning to predict future supply chain disruptions with high accuracy</p>
+                <h4>Intelligent Material Identification</h4>
+                <p>Automatically identifies and categorizes raw materials from product descriptions using comprehensive material databases</p>
               </div>
             </div>
             
@@ -489,13 +493,13 @@
           <h3>💡 Technical Complexity Highlights</h3>
           <div class="complexity-grid">
             <div class="complexity-card">
-              <h4>Advanced Data Processing</h4>
-              <p>Processes millions of data points from multiple sources including news articles, social media posts, weather reports, and economic indicators. Implements sophisticated NLP techniques for sentiment analysis and event extraction.</p>
+              <h4>AI-Powered Product Analysis</h4>
+              <p>Integrates OpenAI API to intelligently decompose any consumer product into its constituent raw materials. Uses natural language processing to understand product descriptions and cross-references with comprehensive material databases to identify supply chain dependencies.</p>
             </div>
             
             <div class="complexity-card">
-              <h4>Machine Learning Pipeline</h4>
-              <p>Implements ensemble learning models that combine multiple algorithms for robust risk prediction. Features include automated feature selection, hyperparameter optimization, and continuous model retraining based on new data.</p>
+              <h4>Advanced Data Processing</h4>
+              <p>Processes millions of data points from multiple sources including news articles, social media posts, weather reports, and economic indicators. Implements sophisticated text processing techniques for sentiment analysis and event extraction.</p>
             </div>
             
             <div class="complexity-card">
@@ -508,6 +512,35 @@
               <p>Models intricate supply chain networks with multiple tiers, dependencies, and alternative sourcing options. Implements graph algorithms for dependency analysis and bottleneck identification.</p>
             </div>
           </div>
+        </div>
+
+        <div class="risk-scoring-section">
+          <h3>📊 Risk Scoring Algorithm</h3>
+          <div class="risk-scoring-grid">
+            <div class="risk-score-card">
+              <h4>Risk Score 0 - Low Risk</h4>
+              <p>Neither the material nor the location are ever mentioned, or only the location is mentioned once</p>
+            </div>
+            
+            <div class="risk-score-card">
+              <h4>Risk Score 1 - Low-Medium Risk</h4>
+              <p>The material is mentioned once by itself, or the location is mentioned twice by itself</p>
+            </div>
+            
+            <div class="risk-score-card">
+              <h4>Risk Score 2 - Medium Risk</h4>
+              <p>Both the material and location are mentioned together in the same data point once, the material is mentioned twice by itself, or the location is mentioned three times by itself</p>
+            </div>
+            
+            <div class="risk-score-card">
+              <h4>Risk Score 3 - High Risk</h4>
+              <p>Both the material and location are mentioned together in the same data point more than once, the material is mentioned more than twice by itself, or the location is mentioned more than three times by itself</p>
+            </div>
+          </div>
+          <p class="risk-note">
+            <strong>Note:</strong> Risk scores are calculated based on the frequency and context of mentions in news articles and social media posts, 
+            providing real-time insights into potential supply chain disruptions.
+          </p>
         </div>
       </div>
     </div>
@@ -563,6 +596,16 @@
     font-weight: 700;
     color: #2c3e50;
     text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .instruction-text {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #5a6c7d;
+    line-height: 1.5;
+    max-width: 600px;
+    text-align: center;
+    font-weight: 400;
   }
 
   .details-btn {
@@ -1228,6 +1271,100 @@
 
     .feature-icon {
       margin: 0 auto 0.5rem auto;
+    }
+  }
+
+  /* Risk Scoring Section Styles */
+  .risk-scoring-section {
+    margin-top: 2.5rem;
+  }
+
+  .risk-scoring-section h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .risk-scoring-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .risk-score-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease;
+  }
+
+  .risk-score-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .risk-score-card h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .risk-score-card h4::before {
+    content: "";
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .risk-score-card:nth-child(1) h4::before {
+    background: #28a745;
+  }
+
+  .risk-score-card:nth-child(2) h4::before {
+    background: #ffc107;
+  }
+
+  .risk-score-card:nth-child(3) h4::before {
+    background: #fd7e14;
+  }
+
+  .risk-score-card:nth-child(4) h4::before {
+    background: #dc3545;
+  }
+
+  .risk-score-card p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    opacity: 0.9;
+  }
+
+  .risk-note {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 1rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    opacity: 0.9;
+    text-align: center;
+  }
+
+  .risk-note strong {
+    color: #ffd700;
+  }
+
+  @media (max-width: 768px) {
+    .risk-scoring-grid {
+      grid-template-columns: 1fr;
     }
   }
 </style> 
