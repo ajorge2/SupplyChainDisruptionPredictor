@@ -18,6 +18,7 @@
   let materialRiskScores = {};
   let dataLoaded = false;
   let rawProduct = "";
+  let showProjectInfo = true;
 
   onMount(async () => {
     try {
@@ -199,6 +200,143 @@
         <p class="status-message">Loading data...</p>
       {/if}
     </header>
+
+    <!-- Project Description Section -->
+    {#if showProjectInfo}
+      <div class="project-info-section">
+        <div class="project-header">
+          <h2>🚀 Advanced Supply Chain Disruption Prediction System</h2>
+          <button class="toggle-btn" on:click={() => showProjectInfo = !showProjectInfo}>
+            {showProjectInfo ? 'Hide Details' : 'Show Details'}
+          </button>
+        </div>
+        
+        <div class="project-description">
+          <div class="tech-stack">
+            <h3>🛠️ Technical Architecture</h3>
+            <div class="tech-grid">
+              <div class="tech-card">
+                <h4>Backend Infrastructure</h4>
+                <ul>
+                  <li><strong>FastAPI</strong> - High-performance REST API with automatic OpenAPI documentation</li>
+                  <li><strong>PostgreSQL</strong> - Relational database with complex supply chain data modeling</li>
+                  <li><strong>Apache Kafka</strong> - Real-time event streaming for data ingestion</li>
+                  <li><strong>Docker & Docker Compose</strong> - Containerized microservices architecture</li>
+                </ul>
+              </div>
+              
+              <div class="tech-card">
+                <h4>Machine Learning Pipeline</h4>
+                <ul>
+                  <li><strong>Scikit-learn</strong> - Ensemble models for risk prediction</li>
+                  <li><strong>Real-time Model Training</strong> - Continuous learning from new data</li>
+                  <li><strong>Feature Engineering</strong> - Multi-dimensional risk factor analysis</li>
+                  <li><strong>Model Versioning</strong> - Automated model deployment and rollback</li>
+                </ul>
+              </div>
+              
+              <div class="tech-card">
+                <h4>Data Ingestion & Processing</h4>
+                <ul>
+                  <li><strong>Multi-source Integration</strong> - News APIs, social media, weather data</li>
+                  <li><strong>Real-time Streaming</strong> - Kafka consumers for live data processing</li>
+                  <li><strong>Data Validation</strong> - Schema enforcement and quality checks</li>
+                  <li><strong>ETL Pipelines</strong> - Automated data transformation and enrichment</li>
+                </ul>
+              </div>
+              
+              <div class="tech-card">
+                <h4>Frontend & UX</h4>
+                <ul>
+                  <li><strong>Svelte.js</strong> - Modern reactive frontend framework</li>
+                  <li><strong>Real-time Updates</strong> - Live risk score calculations</li>
+                  <li><strong>Interactive Visualizations</strong> - Dynamic risk assessment display</li>
+                  <li><strong>Responsive Design</strong> - Cross-platform compatibility</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <div class="system-features">
+            <h3>🎯 Core System Capabilities</h3>
+            <div class="features-grid">
+              <div class="feature-item">
+                <span class="feature-icon">📊</span>
+                <div>
+                  <h4>Multi-dimensional Risk Analysis</h4>
+                  <p>Analyzes supply chain risks across geopolitical, environmental, economic, and social factors using advanced ML algorithms</p>
+                </div>
+              </div>
+              
+              <div class="feature-item">
+                <span class="feature-icon">🌍</span>
+                <div>
+                  <h4>Global Supply Chain Mapping</h4>
+                  <p>Maps complex supply chain networks with material sourcing locations, transportation routes, and dependency analysis</p>
+                </div>
+              </div>
+              
+              <div class="feature-item">
+                <span class="feature-icon">⚡</span>
+                <div>
+                  <h4>Real-time Risk Monitoring</h4>
+                  <p>Continuously monitors global events and automatically updates risk scores based on emerging threats and disruptions</p>
+                </div>
+              </div>
+              
+              <div class="feature-item">
+                <span class="feature-icon">🤖</span>
+                <div>
+                  <h4>Intelligent Alert System</h4>
+                  <p>Proactive notification system that identifies potential disruptions before they impact supply chains</p>
+                </div>
+              </div>
+              
+              <div class="feature-item">
+                <span class="feature-icon">📈</span>
+                <div>
+                  <h4>Predictive Analytics</h4>
+                  <p>Uses historical data and machine learning to predict future supply chain disruptions with high accuracy</p>
+                </div>
+              </div>
+              
+              <div class="feature-item">
+                <span class="feature-icon">🔧</span>
+                <div>
+                  <h4>Scalable Architecture</h4>
+                  <p>Microservices-based design supporting high-throughput data processing and concurrent user access</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="complexity-highlights">
+            <h3>💡 Technical Complexity Highlights</h3>
+            <div class="complexity-grid">
+              <div class="complexity-card">
+                <h4>Advanced Data Processing</h4>
+                <p>Processes millions of data points from multiple sources including news articles, social media posts, weather reports, and economic indicators. Implements sophisticated NLP techniques for sentiment analysis and event extraction.</p>
+              </div>
+              
+              <div class="complexity-card">
+                <h4>Machine Learning Pipeline</h4>
+                <p>Implements ensemble learning models that combine multiple algorithms for robust risk prediction. Features include automated feature selection, hyperparameter optimization, and continuous model retraining based on new data.</p>
+              </div>
+              
+              <div class="complexity-card">
+                <h4>Real-time Event Streaming</h4>
+                <p>Built on Apache Kafka for handling high-volume, real-time data streams. Implements complex event processing patterns to detect supply chain disruption signals from multiple concurrent data sources.</p>
+              </div>
+              
+              <div class="complexity-card">
+                <h4>Complex Supply Chain Modeling</h4>
+                <p>Models intricate supply chain networks with multiple tiers, dependencies, and alternative sourcing options. Implements graph algorithms for dependency analysis and bottleneck identification.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {/if}
 
     <form on:submit|preventDefault={search} class="search-form">
       <input placeholder="Product" bind:value={product} />
@@ -850,5 +988,200 @@
   .low-risk {
     background: #28a745;
     color: white;
+  }
+
+  /* Project Description Section Styles */
+  .project-info-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    margin: 2rem 0;
+    padding: 2rem;
+    color: white;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .project-header h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .toggle-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+  }
+
+  .project-description {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .tech-stack h3,
+  .system-features h3,
+  .complexity-highlights h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .tech-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .tech-card h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .tech-card ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    list-style: none;
+  }
+
+  .tech-card li {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    position: relative;
+  }
+
+  .tech-card li:before {
+    content: "▸";
+    position: absolute;
+    left: -1rem;
+    color: #ffd700;
+    font-weight: bold;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .feature-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+    margin-top: 0.2rem;
+  }
+
+  .feature-item h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .feature-item p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    opacity: 0.9;
+  }
+
+  .complexity-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .complexity-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .complexity-card h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .complexity-card p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    opacity: 0.9;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .project-info-section {
+      margin: 1rem 0;
+      padding: 1.5rem;
+    }
+
+    .project-header {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .project-header h2 {
+      font-size: 1.5rem;
+    }
+
+    .tech-grid,
+    .features-grid,
+    .complexity-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .feature-item {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .feature-icon {
+      margin: 0 auto 0.5rem auto;
+    }
   }
 </style> 
