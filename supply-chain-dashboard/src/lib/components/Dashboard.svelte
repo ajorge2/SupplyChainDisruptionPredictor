@@ -24,7 +24,7 @@
   onMount(async () => {
     try {
       // Load products from products.json
-      const productsRes = await fetch("/api/products");
+      const productsRes = await fetch("http://192.241.150.36:8000/products");
       if (!productsRes.ok) throw new Error("Failed to load products");
       const productsData = await productsRes.json();
       
@@ -106,7 +106,7 @@
       products = processedProducts;
 
       // Load locations from locations.json
-      const locationsRes = await fetch("/api/locations");
+      const locationsRes = await fetch("http://192.241.150.36:8000/locations");
       if (!locationsRes.ok) throw new Error("Failed to load locations");
       const locationsData = await locationsRes.json();
       locations = {
@@ -152,7 +152,7 @@
     result = null;
     materialRiskScores = {};
     try {
-      const res = await fetch("/api/analyze", {
+      const res = await fetch("http://192.241.150.36:8000/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -171,7 +171,7 @@
           try {
             if (result.material_source_locations[material] && result.material_source_locations[material].length > 0) {
               const locations = result.material_source_locations[material];
-              const riskRes = await fetch(`/api/risk_score?${locations.map(loc => `locations=${encodeURIComponent(loc)}`).join('&')}&material=${encodeURIComponent(material)}`);
+              const riskRes = await fetch(`http://192.241.150.36:8000/risk_score?${locations.map(loc => `locations=${encodeURIComponent(loc)}`).join('&')}&material=${encodeURIComponent(material)}`);
               if (riskRes.ok) {
                 const riskData = await riskRes.json();
                 materialRiskScores[material] = riskData;
