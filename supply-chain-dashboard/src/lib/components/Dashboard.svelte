@@ -223,9 +223,15 @@
         Enter any consumer product (like "iPhone", "Tesla Model 3", or "Nike shoes") and a location to analyze supply chain disruption risks. 
         Our AI system breaks down the product into its component raw materials and evaluates mentions in news and social media to provide a risk score (0-3) with detailed breakdown of materials and their source locations.
       </p>
-      <button class="details-btn" on:click={() => document.getElementById('project-details').scrollIntoView({ behavior: 'smooth' })}>
-        📋 See Project Details
-      </button>
+      <div class="header-buttons">
+        <button class="details-btn" on:click={() => document.getElementById('project-details').scrollIntoView({ behavior: 'smooth' })}>
+          📋 See Project Details
+        </button>
+        <a href="https://github.com/ajorge2/SupplyChainDisruptionPredictor" target="_blank" rel="noopener noreferrer" class="details-btn github-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+          GitHub Repo
+        </a>
+      </div>
       {#if !dataLoaded}
         <p class="status-message">Loading data...</p>
       {/if}
@@ -326,45 +332,54 @@
               {#if result.raw_materials && result.raw_materials.length > 0}
                 <div class="materials-list">
                   <h4>Component Materials:</h4>
-                  {#each result.raw_materials as material}
-                    <div class="material-item">
-                      <div class="material-details">
-                        <span class="material-name">{material}</span>
-                        {#if materialRiskScores[material]}
-                          <div class="risk-score-container">
-                            <span 
-                              class="risk-score-value"
-                              class:risk-0={materialRiskScores[material].aggregate_risk_score === 0}
-                              class:risk-1={materialRiskScores[material].aggregate_risk_score === 1}
-                              class:risk-2={materialRiskScores[material].aggregate_risk_score === 2}
-                              class:risk-3={materialRiskScores[material].aggregate_risk_score === 3}
-                            >
-                              {materialRiskScores[material].aggregate_risk_score}
-                            </span>
-                            <div class="tooltip">
-                              <p><strong>Aggregate Risk: {materialRiskScores[material].aggregate_risk_score}</strong></p>
-                              <hr>
-                              {#each Object.entries(materialRiskScores[material].location_scores) as [loc, score]}
-                                <p><strong>{loc.charAt(0).toUpperCase() + loc.slice(1)}:</strong> Risk {score.risk_score}</p>
-                                <ul>
-                                  <li>Together: {score.mentions.together}</li>
-                                  <li>Material Only: {score.mentions.material_only}</li>
-                                  <li>Location Only: {score.mentions.location_only}</li>
-                                </ul>
-                              {/each}
-                            </div>
+                  <ul class="material-list">
+                    {#each result.raw_materials as material}
+                      <li class="material-item">
+                        <div class="material-info">
+                          <span class="material-name">{material}</span>
+                          {#if result.material_source_locations && result.material_source_locations[material] && result.material_source_locations[material].length > 0}
+                          <div class="material-locations">
+                            Source Locations: {result.material_source_locations[material].join(', ')}
                           </div>
-                          {#if materialRiskScores[material].aggregate_risk_score > 0}
-                            <button class="view-sources-btn" on:click={() => showSourcesModal(material, materialRiskScores[material])}>
-                              Sources
-                            </button>
                           {/if}
-                        {:else}
-                          <span class="risk-score-value">N/A</span>
-                        {/if}
-                      </div>
-                    </div>
-                  {/each}
+                        </div>
+                        <div class="material-details">
+                          {#if materialRiskScores[material]}
+                            <div class="risk-score-container">
+                              <span 
+                                class="risk-score-value"
+                                class:risk-0={materialRiskScores[material].aggregate_risk_score === 0}
+                                class:risk-1={materialRiskScores[material].aggregate_risk_score === 1}
+                                class:risk-2={materialRiskScores[material].aggregate_risk_score === 2}
+                                class:risk-3={materialRiskScores[material].aggregate_risk_score === 3}
+                              >
+                                {materialRiskScores[material].aggregate_risk_score}
+                              </span>
+                              <div class="tooltip">
+                                <p><strong>Aggregate Risk: {materialRiskScores[material].aggregate_risk_score}</strong></p>
+                                <hr>
+                                {#each Object.entries(materialRiskScores[material].location_scores) as [loc, score]}
+                                  <p><strong>{loc.charAt(0).toUpperCase() + loc.slice(1)}:</strong> Risk {score.risk_score}</p>
+                                  <ul>
+                                    <li>Together: {score.mentions.together}</li>
+                                    <li>Material Only: {score.mentions.material_only}</li>
+                                    <li>Location Only: {score.mentions.location_only}</li>
+                                  </ul>
+                                {/each}
+                              </div>
+                            </div>
+                            {#if materialRiskScores[material].aggregate_risk_score > 0}
+                              <button class="view-sources-btn" on:click={() => showSourcesModal(material, materialRiskScores[material])}>
+                                Sources
+                              </button>
+                            {/if}
+                          {:else}
+                            <span class="risk-score-value">N/A</span>
+                          {/if}
+                        </div>
+                      </li>
+                    {/each}
+                  </ul>
                 </div>
               {:else}
                 <div class="risk-score">
@@ -645,8 +660,14 @@
     font-weight: 400;
   }
 
+  .header-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+
   .details-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
     color: white;
     border: none;
     padding: 0.75rem 1.5rem;
@@ -655,12 +676,22 @@
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .github-btn {
+    background: #333;
+  }
+
+  .github-btn:hover {
+    background: #444;
   }
 
   .details-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
   }
 
   .back-to-top-btn {
@@ -1010,16 +1041,27 @@
     align-items: center;
     padding: 1rem;
     border-bottom: 1px solid #ecf0f1;
+    gap: 1rem;
   }
 
   .material-item:last-child {
     border-bottom: none;
   }
 
+  .material-info {
+    flex-grow: 1;
+    text-align: left;
+  }
+
+  .material-locations {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 4px;
+  }
+
   .material-details {
     display: flex;
     align-items: center;
-    gap: 1rem;
   }
 
   .material-name {
