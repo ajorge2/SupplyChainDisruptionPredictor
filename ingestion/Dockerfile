@@ -14,4 +14,4 @@ RUN chmod +x /wait-for-it.sh
 COPY . .
 
 # Command to run ingestion scripts (run as files, not modules)
-CMD ["/wait-for-it.sh", "kafka:9092", "--", "sh", "-c", "python weather_ingestion.py & python social_media_ingestion.py & python news_ingestion.py & python mention_consumer.py"]
+CMD ["/wait-for-it.sh", "kafka:9092", "--", "sh", "-c", "python social_media_ingestion.py & python news_ingestion.py & python mention_consumer.py"]

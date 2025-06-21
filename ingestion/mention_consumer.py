@@ -90,13 +90,13 @@ def main():
                 bootstrap_servers=KAFKA_SERVER,
                 auto_offset_reset='latest',
                 enable_auto_commit=True
-            ),
-            'weather': KafkaConsumer(
-                'weather_data',
-                bootstrap_servers=KAFKA_SERVER,
-                auto_offset_reset='latest',
-                enable_auto_commit=True
             )
+            # 'weather': KafkaConsumer(
+            #     'weather_data',
+            #     bootstrap_servers=KAFKA_SERVER,
+            #     auto_offset_reset='latest',
+            #     enable_auto_commit=True
+            # )
         }
         
         # Initialize database connection
