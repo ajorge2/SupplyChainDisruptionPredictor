@@ -3,12 +3,33 @@ import os
 from typing import Dict, List, Optional
 from openai import OpenAI
 from dotenv import load_dotenv
+import re
 
 # Load environment variables
 load_dotenv()
 
 # Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+def safe_json_loads(s: str):
+    """
+    Safely load a JSON string, even if it's embedded in other text.
+    Handles markdown code blocks (```json ... ```) and other common prefixes/suffixes.
+    """
+    # Use regex to find the JSON part, which can be an object or an array
+    match = re.search(r'```json\s*(\{.*\}|\[.*\])\s*```|(\{.*\}|\[.*\])', s, re.DOTALL)
+    if match:
+        # Prioritize the content within the markdown block if it exists
+        json_str = match.group(1) if match.group(1) else match.group(2)
+        try:
+            return json.loads(json_str)
+        except json.JSONDecodeError as e:
+            print(f"Error decoding JSON after extraction: {e}")
+            print(f"Extracted string was: {json_str}")
+            return None  # Or raise an exception, or return a default value
+    else:
+        print("No JSON object or array found in the string.")
+        return None
 
 def load_materials_database() -> Dict:
     """Load the materials database from products.json"""
@@ -85,6 +106,17 @@ def analyze_product(product_name: str, location: Optional[str] = None) -> Dict:
     # Step 3: Materials + locations -> mapping of material to up to 3 source locations
     material_source_locations = gpt_materials_and_locations_to_sources(materials, likely_locations, material_regions)
 
+    # Handle cases where GPT calls fail
+    if not likely_locations or not materials or not material_source_locations:
+        print("One or more GPT analysis steps failed. Returning partial or empty result.")
+        return {
+            "product": product_name,
+            "input_location": location,
+            "likely_locations": likely_locations or [],
+            "raw_materials": materials or [],
+            "material_source_locations": material_source_locations or {}
+        }
+        
     return {
         "product": product_name,
         "input_location": location,
@@ -118,7 +150,7 @@ def gpt_product_to_locations(product_name: str, location: Optional[str], valid_l
         ],
         temperature=0.3
     )
-    return json.loads(response.choices[0].message.content)
+    return safe_json_loads(response.choices[0].message.content)
 
 def gpt_product_to_materials(product_name: str, valid_materials: List[str]) -> List[str]:
     """
@@ -144,7 +176,7 @@ def gpt_product_to_materials(product_name: str, valid_materials: List[str]) -> L
         ],
         temperature=0.3
     )
-    return json.loads(response.choices[0].message.content)
+    return safe_json_loads(response.choices[0].message.content)
 
 def gpt_materials_and_locations_to_sources(materials: List[str], locations_of_interest: List[str], material_regions: Dict[str, List[str]]) -> Dict[str, List[str]]:
     """
@@ -173,7 +205,7 @@ def gpt_materials_and_locations_to_sources(materials: List[str], locations_of_in
         ],
         temperature=0.3
     )
-    return json.loads(response.choices[0].message.content)
+    return safe_json_loads(response.choices[0].message.content)
 
 def main():
     """Example usage of the product analyzer"""
