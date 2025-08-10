@@ -102,7 +102,7 @@ def analyze_product(product_name: str, location: Optional[str] = None) -> Dict:
 
         # Step 1: Product + Location -> 3 likely locations
         try:
-            locations = gpt_product_to_locations(product_name, location or "global")
+            locations = gpt_product_to_locations(product_name, location or "global", valid_locations)
             if not locations:
                 locations = ["China", "Taiwan", "South Korea"]  # Fallback
         except Exception as e:
@@ -111,7 +111,7 @@ def analyze_product(product_name: str, location: Optional[str] = None) -> Dict:
 
         # Step 2: Product -> Materials
         try:
-            materials = gpt_product_to_materials(product_name)
+            materials = gpt_product_to_materials(product_name, valid_materials)
             if not materials:
                 materials = ["aluminum", "copper", "silicon"]  # Fallback
         except Exception as e:
@@ -120,7 +120,7 @@ def analyze_product(product_name: str, location: Optional[str] = None) -> Dict:
 
         # Step 3: Materials + Locations -> Material source locations
         try:
-            material_locations = gpt_materials_and_locations_to_sources(materials, locations)
+            material_locations = gpt_materials_and_locations_to_sources(materials, locations, material_regions)
             if not material_locations:
                 # Create a simple fallback mapping
                 material_locations = {material: ["China"] for material in materials}
