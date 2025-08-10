@@ -119,13 +119,21 @@ def analyze_product(product_name: str, location: Optional[str] = None) -> Dict:
             materials = ["aluminum", "copper", "silicon"]  # Fallback
 
         # Step 3: Materials + Locations -> Material source locations
+        print(f"DEBUG: About to call gpt_materials_and_locations_to_sources")
+        print(f"DEBUG: materials = {materials}")
+        print(f"DEBUG: locations = {locations}")
+        print(f"DEBUG: material_regions keys = {list(material_regions.keys())[:5]}...")
         try:
             material_locations = gpt_materials_and_locations_to_sources(materials, locations, material_regions)
+            print(f"DEBUG: Third GPT call successful")
             if not material_locations:
                 # Create a simple fallback mapping
                 material_locations = {material: ["China"] for material in materials}
         except Exception as e:
             print(f"Error in gpt_materials_and_locations_to_sources: {e}")
+            print(f"DEBUG: Exception type: {type(e)}")
+            import traceback
+            traceback.print_exc()
             material_locations = {material: ["China"] for material in materials}
 
         return {
